@@ -47,6 +47,8 @@
   .bar.t { top: 0; } .bar.b { bottom: 0; }
   .copy { align-self: end; z-index: 2; padding: calc(4.5svh + 96px) var(--gut) 5svh; max-width: 1120px; }
   .hero .kicker { margin-bottom: 22px; letter-spacing: .18em; }
+  [dir="rtl"] .hero .kicker { letter-spacing: 0; }
+  @media (min-width: 1000px) { .car { transform: translateX(-34%); width: min(96vw, 1180px); bottom: 15svh; } }
   .rec { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); flex: none; }
   h1 { font-weight: 300; font-size: clamp(44px, 9.2vw, 128px); line-height: .96; letter-spacing: -.035em; }
   [dir="rtl"] h1 { letter-spacing: 0; line-height: 1.22; font-size: clamp(38px, 8.2vw, 108px); font-weight: 300; }
@@ -100,9 +102,10 @@
   }
   .scene { position: relative; z-index: 1; }
   .sc-meta { display: flex; justify-content: space-between; align-items: center; height: 44px; font-family: var(--mono); font-size: 11px; color: var(--steel); letter-spacing: .12em; direction: ltr; }
-  .sc-meta b { color: var(--fog); font-weight: 500; display: inline-flex; align-items: center; gap: 10px; }
+  .sc-meta b { color: var(--fog); font-weight: 500; display: inline-flex; align-items: center; gap: 10px; background: var(--black); padding-inline-end: 10px; }
+  .sc-meta > span { background: var(--black); padding-inline-start: 10px; }
   .sc-meta b::before { content: ""; width: 9px; height: 9px; border-radius: 50%; background: var(--black); border: 1px solid var(--accent); box-shadow: 0 0 0 4px var(--black); }
-  .frame { position: relative; overflow: hidden; border-radius: var(--r); border: 1px solid var(--line); background: radial-gradient(120% 90% at 30% 0%, #1a1f25 0%, #0c0e11 60%, #08090b 100%); aspect-ratio: 4 / 4.4; padding: 22px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
+  .frame { position: relative; overflow: hidden; border-radius: var(--r); border: 1px solid var(--line); background: radial-gradient(120% 90% at 30% 0%, #1a1f25 0%, #0c0e11 60%, #08090b 100%); aspect-ratio: 1 / 1; padding: 22px; display: flex; flex-direction: column; justify-content: center; gap: 12px; }
   .frame::after { content: ""; position: absolute; inset-inline: 0; top: 0; height: 22px; background: linear-gradient(180deg, rgba(0,0,0,.55), transparent); pointer-events: none; }
   @media (max-width: 899px) { .frame { aspect-ratio: auto; min-height: 300px; } }
   .scene h3 { margin-top: 22px; font-size: 22px; font-weight: 500; letter-spacing: -.01em; }
@@ -139,9 +142,9 @@
   /* ---------- a Reel (used in several places) ---------- */
   .reel { --d-acc: var(--accent); position: relative; aspect-ratio: 9 / 16; overflow: hidden; background: #0d0f12; border-radius: 22px; isolation: isolate; direction: ltr; }
   .reel > img, .reel > video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
-  .reel .ui { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; justify-content: space-between; padding: 9% 8% 7%; background: linear-gradient(180deg, rgba(0,0,0,.45), transparent 26%, transparent 62%, rgba(0,0,0,.7)); }
+  .reel .ui { position: absolute; inset: 0; z-index: 2; display: flex; flex-direction: column; justify-content: flex-start; gap: 14px; padding: 9% 8% 7%; background: linear-gradient(180deg, rgba(0,0,0,.5), transparent 24%, transparent 46%, rgba(0,0,0,.55) 68%, rgba(0,0,0,.85)); }
   .reel .dname { font-size: clamp(8px, 2.6cqi, 12px); letter-spacing: .32em; text-transform: uppercase; text-align: center; color: #fff; font-weight: 500; }
-  .reel .hook { display: grid; gap: 8px; }
+  .reel .hook { display: grid; gap: 8px; margin-top: auto; }
   .reel .hook i { width: 26px; height: 2px; background: var(--d-acc); box-shadow: 0 0 10px var(--d-acc); }
   .reel .hook span { font-size: clamp(14px, 7.4cqi, 30px); font-weight: 500; line-height: 1.12; color: #fff; letter-spacing: -.01em; text-shadow: 0 2px 18px rgba(0,0,0,.5); }
   .reel .hook[dir="rtl"] { font-family: "Vazirmatn", sans-serif; }
@@ -217,7 +220,7 @@
   .plans { display: grid; gap: 16px; }
   @media (min-width: 900px) { .plans { grid-template-columns: repeat(3, 1fr); align-items: stretch; } }
   .plan { position: relative; display: flex; flex-direction: column; gap: 20px; padding: clamp(24px, 2.6vw, 34px); border-radius: var(--r); border: 1px solid var(--line); background: linear-gradient(180deg, #0f1215, #090b0d); }
-  .plan.rec { border-color: rgba(255,74,28,.55); background: radial-gradient(120% 60% at 50% 0%, rgba(255,74,28,.12), transparent 60%), linear-gradient(180deg, #121519, #0a0c0e); }
+  .plan.hot { border-color: rgba(255,74,28,.55); background: radial-gradient(120% 60% at 50% 0%, rgba(255,74,28,.12), transparent 60%), linear-gradient(180deg, #121519, #0a0c0e); }
   .plan-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; }
   .plan-h h3 { font-size: 15px; font-weight: 500; letter-spacing: .14em; text-transform: uppercase; direction: ltr; }
   .price { display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap; }
@@ -225,7 +228,7 @@
   .price span { color: var(--steel); font-size: 14px; }
   .reels { display: flex; align-items: center; gap: 12px; padding-block: 14px; border-block: 1px solid var(--line); }
   .reels b { font-family: var(--mono); font-weight: 500; font-size: 22px; color: var(--fog); }
-  .reels span { color: var(--mist); font-size: 14.5px; }
+  .reels span { color: var(--mist); font-size: 14.5px; white-space: nowrap; }
   .reels .bars { margin-inline-start: auto; display: flex; gap: 2px; align-items: flex-end; height: 18px; }
   .reels .bars i { width: 2px; background: var(--accent); border-radius: 1px; }
   .plan p { color: var(--mist); font-size: 15px; }
@@ -351,8 +354,8 @@
         <path fill="#05070a" opacity=".9" d="M300,164 C352,128 422,108 502,105 C572,104 622,116 666,143 L640,160 Z"/>
         <path fill="none" stroke="url(#rim)" stroke-width="2" d="M112,178 L262,164 C322,122 402,92 502,88 C592,85 652,100 722,140 L862,160"/>
         <path fill="none" stroke="rgba(255,255,255,.08)" stroke-width="1.5" d="M120,206 L940,206"/>
-        <g class="wheel" style="transform-origin:260px 243px"><circle cx="260" cy="243" r="56" fill="#0a0c0f" stroke="#2b3138" stroke-width="6"/><circle cx="260" cy="243" r="34" fill="url(#hub)"/><path stroke="#4a535d" stroke-width="3" d="M260,211 V275 M228,243 H292 M237,220 L283,266 M283,220 L237,266"/></g>
-        <g class="wheel" style="transform-origin:810px 243px"><circle cx="810" cy="243" r="56" fill="#0a0c0f" stroke="#2b3138" stroke-width="6"/><circle cx="810" cy="243" r="34" fill="url(#hub)"/><path stroke="#4a535d" stroke-width="3" d="M810,211 V275 M778,243 H842 M787,220 L833,266 M833,220 L787,266"/></g>
+        <g class="wheel" data-o="260 243"><circle cx="260" cy="243" r="56" fill="#0a0c0f" stroke="#2b3138" stroke-width="6"/><circle cx="260" cy="243" r="34" fill="url(#hub)"/><path stroke="#4a535d" stroke-width="3" d="M260,211 V275 M228,243 H292 M237,220 L283,266 M283,220 L237,266"/></g>
+        <g class="wheel" data-o="810 243"><circle cx="810" cy="243" r="56" fill="#0a0c0f" stroke="#2b3138" stroke-width="6"/><circle cx="810" cy="243" r="34" fill="url(#hub)"/><path stroke="#4a535d" stroke-width="3" d="M810,211 V275 M778,243 H842 M787,220 L833,266 M833,220 L787,266"/></g>
         <rect x="938" y="192" width="22" height="6" rx="3" fill="#ff4a1c"/>
         <ellipse class="tailglow" cx="958" cy="195" rx="60" ry="24" fill="url(#glow)" opacity=".6"/>
         <path d="M48,200 L84,196" stroke="#cfd6dd" stroke-width="4" stroke-linecap="round" opacity=".8"/>
@@ -582,7 +585,7 @@
         </ul>
         <a class="btn ghost" href="https://t.me/showroom_ahura_bot" rel="noopener" data-t="cta">Start in Telegram</a>
       </article>
-      <article class="plan rec">
+      <article class="plan hot">
         <div class="plan-h"><h3>Showroom</h3><span class="pill acc" data-t="recm">Recommended</span></div>
         <div class="price"><b class="ltr" data-t="pr2">€29</b><span data-t="pm">per month</span></div>
         <div class="reels"><b data-t="n12">12</b><span data-t="rpm">Reels a month</span><span class="bars" aria-hidden="true" data-bars="12"></span></div>
@@ -998,10 +1001,11 @@ window.T = {
     const tl = G.timeline({ defaults: { ease: "expo.out" } });
     tl.from(".car svg", { xPercent: -30, opacity: 0, duration: 2.2, ease: "power3.out" })
       .from(".hero h1 .line > span", { yPercent: 105, duration: 1.1, stagger: .12 }, .3)
-      .from(".hero .kicker, .hero .sub, .hero .actions, .hero .proof, .top, .timeline", { opacity: 0, y: 14, duration: 1, stagger: .08 }, .6)
+      .from(".hero .kicker, .hero .sub, .hero .actions, .hero .proof, .timeline", { opacity: 0, y: 14, duration: 1, stagger: .08 }, .6)
+      .from(".top", { opacity: 0, duration: 1.2, ease: "power2.out", clearProps: "opacity" }, .5)
       .from(".hero .bar.t", { yPercent: -100, duration: 1.2 }, 0)
       .from(".hero .bar.b", { yPercent: 100, duration: 1.2 }, 0);
-    G.to(".wheel", { rotation: 360, duration: 1.6, ease: "none", repeat: -1 });
+    document.querySelectorAll(".wheel").forEach((w) => G.to(w, { rotation: 360, svgOrigin: w.dataset.o, duration: 1.6, ease: "none", repeat: -1 }));
     G.fromTo(".hero .film", { "--sweep": "-45%" }, { "--sweep": "45%", duration: 3.2, ease: "power2.inOut", repeat: -1, repeatDelay: BEAT * 4, delay: 1 });
     const box = document.querySelector(".streaks");
     setInterval(() => {
@@ -1070,7 +1074,7 @@ window.T = {
   let x = 50;
   function setX(v) { x = Math.max(0, Math.min(100, v)); ba.style.setProperty("--x", x + "%"); baH.setAttribute("aria-valuenow", Math.round(x)); }
   let drag = false;
-  ba.addEventListener("pointerdown", (e) => { drag = true; try { ba.setPointerCapture(e.pointerId); } catch (_) {} move(e); });
+  ba.addEventListener("pointerdown", (e) => { drag = true; if (window.__baTw) window.__baTw.kill(); try { ba.setPointerCapture(e.pointerId); } catch (_) {} move(e); });
   ba.addEventListener("pointermove", (e) => { if (drag) move(e); });
   ["pointerup", "pointercancel", "lostpointercapture"].forEach((n) => ba.addEventListener(n, () => { drag = false; }));
   ba.addEventListener("dragstart", (e) => e.preventDefault());
@@ -1085,7 +1089,7 @@ window.T = {
   // first time it comes into view: a slow reveal from raw to Reel
   if (G && window.ScrollTrigger) {
     const o = { v: 88 }; setX(88);
-    ScrollTrigger.create({ trigger: ba, start: "top 70%", once: true, onEnter: () => G.to(o, { v: 50, duration: 2.2, ease: "power3.inOut", onUpdate: () => { if (!drag) setX(o.v); } }) });
+    ScrollTrigger.create({ trigger: ba, start: "top 70%", once: true, onEnter: () => window.__baTw = G.to(o, { v: 50, duration: 2.2, ease: "power3.inOut", onUpdate: () => { if (!drag) setX(o.v); } }) });
   }
   // the loop plays only while visible, never with reduced motion
   const vid = document.getElementById("loopv");

@@ -19,7 +19,7 @@
   .bar-top .sample { margin-inline-start: auto; }
   .bar-top .back { font-size: 13px; color: var(--mist); white-space: nowrap; }
   .bar-top .back:hover { color: var(--fog); }
-  @media (max-width: 640px) { .bar-top .where, .bar-top .back { display: none; } .bar-top .sample { font-size: 9.5px; padding: 4px 8px; } }
+  @media (max-width: 640px) { .bar-top .where, .bar-top .back { display: none; } .bar-top .sample { display: none; } .bar-top .langs { margin-inline-start: auto; } }
   .notice { padding: 10px var(--gut); font-size: 13px; color: var(--warn); background: rgba(255,184,77,.06); border-bottom: 1px solid rgba(255,184,77,.18); }
 
   .tabs { display: flex; gap: 4px; padding: 10px var(--gut); border-bottom: 1px solid var(--line); background: var(--black); position: sticky; top: 60px; z-index: 30; }
@@ -28,7 +28,7 @@
 
   .shell { display: grid; }
   .snav { display: none; }
-  .info { display: none; padding: 18px var(--gut) 40px; gap: 16px; align-content: start; }
+  .info { display: none; padding: 18px var(--gut) 40px; gap: 16px; align-content: start; grid-template-columns: minmax(0, 1fr); }
   .shell[data-view="chat"] .chatc { display: flex; }
   .shell[data-view="brand"] .chatc, .shell[data-view="credits"] .chatc { display: none; }
   .shell[data-view="brand"] .info, .shell[data-view="credits"] .info { display: grid; }
@@ -203,7 +203,7 @@
         <div class="rthumb"><img src="assets/reel-front.jpg" alt="" width="540" height="960"><button class="play" type="button" data-ta="play"><span><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></span></button><span class="dur">0:15</span></div>
         <div class="rbody">
           <h4 data-t="r1">C-Class, guess the car</h4>
-          <div class="rmeta"><span class="pill" data-t="v1">Version 1</span><span class="pill">120 BPM</span></div>
+          <div class="rmeta"><span class="pill" data-t="v1">Version 1</span><span class="pill ltr">120 BPM</span></div>
           <p class="qa" data-t="qa1">Checked: 9.2 of 10. Cuts on the beat, text readable, no price on screen.</p>
           <div class="acts"><button type="button" class="go" data-act="ok" data-t="b_ok">Approve</button><button type="button" data-act="ch" data-t="b_ch">Change</button><button type="button" data-act="ag" data-t="b_ag">Another version</button></div>
         </div>

@@ -78,7 +78,7 @@ for (const [bn, bt] of [['chromium', chromium], ['webkit', webkit]]) {
       report.video.push({ tag, ...v }); if (!v.src) report.errors.push({ tag, kind: 'video', text: JSON.stringify(v) });
       await page.evaluate(() => scrollTo({ top: document.body.scrollHeight, behavior: 'instant' })); await sleep(900); await shot(page, `${tag}-index-footer`);
       if (vp.n !== 768) {
-        await to(page, 'reel'); await sleep(2600);
+        await to(page, 'reel'); await page.locator('#ba').scrollIntoViewIfNeeded(); await sleep(2800);
         const box = await page.locator('#ba').boundingBox();
         await page.mouse.move(box.x + box.width * .5, box.y + box.height * .5); await page.mouse.down();
         await page.mouse.move(box.x + box.width * .18, box.y + box.height * .5, { steps: 6 }); await page.mouse.up();
