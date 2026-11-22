@@ -1,0 +1,28 @@
+name: check
+# Visual QA for the Showroom site preview: Chromium + WebKit, 390 / 768 / 1440, EN DE FA, three pages.
+on:
+  workflow_dispatch:
+    inputs:
+      filter: { required: false, default: "" }
+concurrency:
+  group: check
+  cancel-in-progress: true
+jobs:
+  check:
+    runs-on: ubuntu-24.04
+    container: mcr.microsoft.com/playwright:v1.49.1-noble
+    timeout-minutes: 40
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Playwright
+        run: npm i --no-save --no-package-lock playwright@1.49.1
+      - name: Check every page in Chromium and WebKit
+        env:
+          FILTER: ${{ inputs.filter }}
+        run: node tests/check.mjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: picks, path: out/picks, retention-days: 5 }
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with: { name: report, path: out/report.json, retention-days: 5 }
