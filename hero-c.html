@@ -1,0 +1,249 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Showroom · Hero C · Drop</title>
+<meta name="description" content="Showroom: send raw clips in a chat, get beat-synced branded Reels for your dealership.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Inter:wght@400;600;800&family=Vazirmatn:wght@400;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --night: #12001f;
+    --magenta: #ff2d6f;
+    --violet: #6b2bff;
+    --lime: #c8ff2e;
+    --white: #ffffff;
+    --display: "Anton", Impact, sans-serif;
+    --sans: "Inter", system-ui, sans-serif;
+  }
+  [dir="rtl"] { --display: "Vazirmatn", system-ui, sans-serif; --sans: "Vazirmatn", system-ui, sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--night); color: var(--white); overflow-x: clip; }
+  body { font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+
+  .hero { position: relative; min-height: 100svh; overflow: hidden; isolation: isolate; display: flex; flex-direction: column;
+    background: radial-gradient(70% 60% at 85% 10%, rgba(255,45,111,.85), transparent 60%),
+                radial-gradient(70% 70% at 0% 100%, rgba(107,43,255,.9), transparent 65%),
+                linear-gradient(160deg, #2a0047, var(--night)); }
+  .blob { position: absolute; width: 60vmax; aspect-ratio: 1; border-radius: 50%; filter: blur(70px); opacity: .55; z-index: -1; }
+  .blob.b1 { background: var(--magenta); top: -25vmax; right: -20vmax; }
+  .blob.b2 { background: var(--violet); bottom: -30vmax; left: -25vmax; }
+  .flash { position: absolute; inset: 0; background: var(--white); opacity: 0; pointer-events: none; z-index: 5; mix-blend-mode: overlay; }
+
+  nav { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 16px clamp(16px, 4vw, 48px); }
+  .logo { font-family: var(--display); font-size: 26px; letter-spacing: .01em; text-transform: uppercase; display: flex; align-items: center; gap: 8px; }
+  .logo .dot { width: 12px; height: 12px; border-radius: 50%; background: var(--lime); }
+  .langs { display: flex; gap: 6px; }
+  .langs button { border: 2px solid var(--white); background: transparent; color: var(--white); font: 800 11px var(--sans); padding: 6px 10px; border-radius: 999px; cursor: pointer; }
+  .langs button[aria-pressed="true"] { background: var(--lime); border-color: var(--lime); color: var(--night); }
+
+  .main { flex: 1; display: grid; grid-template-columns: 1fr; gap: 26px; padding: 6px clamp(16px, 4vw, 48px) 24px; align-items: center; }
+  @media (min-width: 900px) { .main { grid-template-columns: 1.25fr .75fr; } }
+
+  h1 { font-family: var(--display); font-weight: 400; text-transform: uppercase; font-size: clamp(64px, 13vw, 176px); line-height: .94; letter-spacing: -.01em; }
+  [dir="rtl"] h1 { font-weight: 900; line-height: 1.1; font-size: clamp(54px, 12vw, 160px); }
+  h1 .row { display: block; }
+  h1 .row > span { display: inline-block; }
+  h1 .out { color: transparent; -webkit-text-stroke: 2px var(--white); }
+  h1 .lime { color: var(--lime); }
+  .sub { margin-top: 18px; max-width: 36ch; font-size: clamp(16px, 1.5vw, 19px); line-height: 1.45; font-weight: 600; }
+  .actions { margin-top: 24px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; height: 56px; padding: 0 26px; border-radius: 999px; font-weight: 800; font-size: 16px; transition: transform .15s; }
+  .btn.primary { background: var(--lime); color: var(--night); box-shadow: 0 6px 0 #6f9600; }
+  .btn.primary:active { transform: translateY(4px); box-shadow: 0 2px 0 #6f9600; }
+  .btn.ghost { border: 2px solid var(--white); }
+  .free { font-size: 13px; font-weight: 600; opacity: .85; }
+
+  /* --- reel frame --- */
+  .reel { position: relative; width: min(78vw, 340px); aspect-ratio: 9 / 16; justify-self: center; border-radius: 28px; overflow: hidden; transform: rotate(3deg);
+    box-shadow: 0 30px 80px -20px rgba(0,0,0,.6), 0 0 0 4px rgba(255,255,255,.9); background: #000; }
+  [dir="rtl"] .reel { transform: rotate(-3deg); }
+  .shot { position: absolute; inset: 0; opacity: 0; }
+  .shot.on { opacity: 1; }
+  .shot svg { position: absolute; width: 150%; left: -25%; bottom: 24%; }
+  .s1 { background: linear-gradient(170deg, #ff2d6f, #3a0030 70%); }
+  .s2 { background: linear-gradient(200deg, #6b2bff, #0a0020 70%); }
+  .s3 { background: linear-gradient(160deg, #ff8a00, #ff2d6f 50%, #2a0040); }
+  .s4 { background: linear-gradient(180deg, #00d1ff, #2a0047 75%); }
+  .s2 svg { width: 260%; left: -110%; bottom: 10%; }
+  .s3 svg { width: 230%; left: -10%; bottom: 30%; }
+  .s4 svg { transform: scaleX(-1); }
+  .bars { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; gap: 4px; z-index: 2; }
+  .bars i { flex: 1; height: 3px; border-radius: 2px; background: rgba(255,255,255,.35); overflow: hidden; }
+  .bars i b { display: block; height: 100%; width: 0; background: var(--white); }
+  .handle { position: absolute; top: 24px; left: 12px; z-index: 2; display: flex; align-items: center; gap: 8px; font-size: 12px; font-weight: 800; }
+  .handle i { width: 26px; height: 26px; border-radius: 50%; background: var(--lime); border: 2px solid var(--white); }
+  .caption { position: absolute; left: 14px; right: 14px; bottom: 74px; z-index: 2; font-family: var(--display); text-transform: uppercase; font-size: 34px; line-height: .95; text-shadow: 0 2px 20px rgba(0,0,0,.4); }
+  [dir="rtl"] .caption { font-weight: 900; line-height: 1.2; font-size: 28px; text-align: right; }
+  .caption mark { background: var(--lime); color: var(--night); padding: 0 6px; }
+  .rail { position: absolute; right: 10px; bottom: 80px; z-index: 2; display: flex; flex-direction: column; gap: 16px; align-items: center; font-size: 11px; font-weight: 800; }
+  [dir="rtl"] .rail { right: auto; left: 10px; }
+  .rail svg { width: 26px; height: 26px; display: block; margin: 0 auto 2px; }
+  .eq { position: absolute; left: 14px; bottom: 22px; z-index: 2; display: flex; align-items: flex-end; gap: 3px; height: 26px; }
+  .eq i { width: 4px; height: 30%; background: var(--white); border-radius: 2px; }
+  .sound { position: absolute; left: 54px; bottom: 26px; z-index: 2; font-size: 11px; font-weight: 600; opacity: .9; }
+  .sticker { position: absolute; z-index: 3; font-weight: 800; font-size: 12px; padding: 8px 12px; border-radius: 12px; white-space: nowrap; }
+  .sticker.k1 { background: var(--white); color: var(--night); top: 18%; left: -8px; transform: rotate(-8deg); }
+  .sticker.k2 { background: var(--magenta); color: var(--white); top: 44%; right: -6px; transform: rotate(6deg); }
+  .reelwrap { position: relative; justify-self: center; padding: 0 12px; }
+
+  /* --- marquee --- */
+  .marquee { position: relative; z-index: 1; background: var(--lime); color: var(--night); transform: rotate(-2deg); margin: 8px -4vw 26px; overflow: hidden; }
+  .track { display: flex; width: max-content; gap: 0; padding: 12px 0; font-family: var(--display); font-size: clamp(20px, 3vw, 32px); text-transform: uppercase; white-space: nowrap; }
+  [dir="rtl"] .track { font-weight: 900; }
+  .track span { padding: 0 18px; }
+  .track span::after { content: "✶"; margin-inline-start: 36px; }
+  @media (prefers-reduced-motion: reduce) { .track { animation: none !important; } }
+</style>
+</head>
+<body>
+<section class="hero" aria-label="Showroom">
+  <div class="blob b1" aria-hidden="true"></div>
+  <div class="blob b2" aria-hidden="true"></div>
+  <div class="flash" aria-hidden="true"></div>
+
+  <nav>
+    <a class="logo" href="#"><span class="dot"></span>Showroom</a>
+    <div class="langs" role="group" aria-label="Language">
+      <button data-lang="en" aria-pressed="true">EN</button>
+      <button data-lang="de" aria-pressed="false">DE</button>
+      <button data-lang="fa" aria-pressed="false">FA</button>
+    </div>
+  </nav>
+
+  <div class="main">
+    <div class="copy">
+      <h1>
+        <span class="row"><span data-t="r1">Raw clips</span></span>
+        <span class="row out"><span data-t="r2">in.</span></span>
+        <span class="row lime"><span data-t="r3">Reels out.</span></span>
+      </h1>
+      <p class="sub" data-t="sub">Drop your car clips in the chat. Get scroll-stopping Reels, cut on the beat, in your brand. No editor, no app.</p>
+      <div class="actions">
+        <a class="btn primary" href="#chat" data-t="cta">Make my first Reel</a>
+        <span class="free" data-t="free">First month free · invite a dealer, get credits</span>
+      </div>
+    </div>
+
+    <div class="reelwrap" aria-hidden="true">
+      <span class="sticker k1" data-t="k1">🔥 guess the car</span>
+      <span class="sticker k2" data-t="k2">+ your logo</span>
+      <div class="reel">
+        <!-- LOCAL SESSION: each .shot can hold a <video> of a real cut -->
+        <div class="shot s1 on"><svg viewBox="0 0 1000 300"><use href="#coupe"/></svg></div>
+        <div class="shot s2"><svg viewBox="0 0 1000 300"><use href="#coupe"/></svg></div>
+        <div class="shot s3"><svg viewBox="0 0 1000 300"><use href="#coupe"/></svg></div>
+        <div class="shot s4"><svg viewBox="0 0 1000 300"><use href="#coupe"/></svg></div>
+        <div class="bars"><i><b></b></i><i><b></b></i><i><b></b></i><i><b></b></i></div>
+        <div class="handle"><i></i><span dir="ltr">@yourdealer</span></div>
+        <div class="caption" data-t="cap">Send this to a friend who <mark>needs it</mark></div>
+        <div class="rail">
+          <div><svg viewBox="0 0 24 24" fill="#fff"><path d="M12 21s-7-4.4-9.3-9C1 8.6 3 5 6.5 5c2 0 3.3 1 5.5 3 2.2-2 3.5-3 5.5-3C21 5 23 8.6 21.3 12 19 16.6 12 21 12 21z"/></svg>12k</div>
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12z"/></svg>340</div>
+          <div><svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2"><path d="M22 3 2 10l8 3 3 8 9-18z"/></svg>2.1k</div>
+        </div>
+        <div class="eq"><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="sound" dir="ltr">♪ Showroom · 120 BPM</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="marquee" aria-hidden="true"><div class="track"></div></div>
+
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <linearGradient id="cpaint" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset=".5" stop-color="#ffd1e0"/><stop offset="1" stop-color="#2a0040"/></linearGradient>
+      <g id="coupe">
+        <path fill="url(#cpaint)" d="M40,226 C40,200 62,186 112,178 L262,164 C322,122 402,92 502,88 C592,85 652,100 722,140 L862,160 C922,168 956,186 960,214 L962,230 C962,239 955,243 945,243 L880,243 A70,70 0 0 0 740,243 L330,243 A70,70 0 0 0 190,243 L60,243 C48,243 40,238 40,226 Z"/>
+        <path fill="#12001f" d="M300,164 C352,128 422,108 502,105 C572,104 622,116 666,143 L640,160 Z"/>
+        <circle cx="260" cy="243" r="56" fill="#12001f"/><circle cx="810" cy="243" r="56" fill="#12001f"/>
+        <circle cx="260" cy="243" r="28" fill="#c8ff2e"/><circle cx="810" cy="243" r="28" fill="#c8ff2e"/>
+      </g>
+    </defs>
+  </svg>
+</section>
+
+<script>
+  const T = {
+    en: { r1: "Raw clips", r2: "in.", r3: "Reels out.", sub: "Drop your car clips in the chat. Get scroll-stopping Reels, cut on the beat, in your brand. No editor, no app.", cta: "Make my first Reel", free: "First month free · invite a dealer, get credits", k1: "🔥 guess the car", k2: "+ your logo", cap: 'Send this to a friend who <mark>needs it</mark>',
+          mq: ["Beat-synced", "Your brand", "Telegram or web", "EN · DE · FA", "Caption + hashtags", "Posting time"] },
+    de: { r1: "Rohclips", r2: "rein.", r3: "Reels raus.", sub: "Wirf deine Auto-Clips in den Chat. Bekomm Reels, die das Scrollen stoppen: im Takt geschnitten, in deinem Branding. Kein Editor, keine App.", cta: "Mein erstes Reel", free: "Erster Monat gratis · Händler einladen, Credits bekommen", k1: "🔥 errate das Auto", k2: "+ dein Logo", cap: 'Schick das einem Freund, der <mark>es braucht</mark>',
+          mq: ["Im Takt", "Dein Branding", "Telegram oder Web", "EN · DE · FA", "Caption + Hashtags", "Postingzeit"] },
+    fa: { r1: "کلیپ خام", r2: "بفرست.", r3: "ریلز بگیر.", sub: "کلیپ‌های ماشین را در چت بینداز. ریلزی بگیر که اسکرول را متوقف می‌کند: روی ضرب، با برند خودت. بدون ادیتور، بدون اپ.", cta: "ساخت اولین ریلز", free: "ماه اول رایگان · دعوت از نمایشگاه دیگر، اعتبار هدیه", k1: "🔥 ماشین را حدس بزن", k2: "+ لوگوی تو", cap: 'این را بفرست برای دوستی که <mark>لازمش دارد</mark>',
+          mq: ["هماهنگ با ضرب", "برند خودت", "تلگرام یا وب", "EN · DE · FA", "کپشن + هشتگ", "زمان انتشار"] }
+  };
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  const track = document.querySelector(".track");
+  function fillMarquee(l) {
+    const items = T[l].mq.map(s => `<span>${s}</span>`).join("");
+    track.innerHTML = items + items + items + items;
+  }
+  function setLang(l) {
+    document.documentElement.lang = l;
+    document.documentElement.dir = l === "fa" ? "rtl" : "ltr";
+    document.querySelectorAll("[data-t]").forEach(el => el.innerHTML = T[l][el.dataset.t]);
+    document.querySelectorAll(".langs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === l));
+    fillMarquee(l);
+    if (window.startMarquee) startMarquee();
+  }
+  document.querySelectorAll(".langs button").forEach(b => b.onclick = () => setLang(b.dataset.lang));
+  fillMarquee("en");
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  (function () {
+    if (!window.gsap || reduce) return;
+    const BEAT = 0.5; // 120 BPM
+
+    // entrance: slam the words in
+    gsap.timeline({ defaults: { ease: "back.out(2)" } })
+      .from("h1 .row > span", { yPercent: 120, rotate: () => gsap.utils.random(-8, 8), opacity: 0, duration: .7, stagger: BEAT / 2 })
+      .from(".sub, .actions", { opacity: 0, y: 16, duration: .5, ease: "power3.out", stagger: .1 }, "-=.2")
+      .from(".reel", { scale: .6, rotate: 18, opacity: 0, duration: .9, ease: "expo.out" }, .2)
+      .from(".sticker", { scale: 0, duration: .5, stagger: .15 }, .9)
+      .from(".marquee", { yPercent: 120, opacity: 0, duration: .6, ease: "power3.out" }, .6);
+
+    // marquee
+    let mq;
+    window.startMarquee = function () {
+      if (mq) mq.kill();
+      gsap.set(track, { x: 0 });
+      const dir = document.documentElement.dir === "rtl" ? 1 : -1;
+      mq = gsap.to(track, { x: dir * track.scrollWidth / 2, duration: 18, ease: "none", repeat: -1 });
+    };
+    startMarquee();
+
+    // the Reel: a cut on every bar (4 beats), story bars fill, a flash on the drop
+    const shots = gsap.utils.toArray(".shot");
+    const fills = gsap.utils.toArray(".bars b");
+    const BAR = BEAT * 4;
+    let i = 0;
+    function cut() {
+      shots.forEach((s, k) => s.classList.toggle("on", k === i));
+      gsap.fromTo(shots[i], { scale: 1.18 }, { scale: 1, duration: BAR, ease: "power2.out" });
+      gsap.fromTo(shots[i].querySelector("svg"), { xPercent: i % 2 ? 8 : -8 }, { xPercent: i % 2 ? -4 : 4, duration: BAR, ease: "none" });
+      fills.forEach((f, k) => gsap.set(f, { width: k < i ? "100%" : "0%" }));
+      gsap.fromTo(fills[i], { width: "0%" }, { width: "100%", duration: BAR, ease: "none" });
+      if (i === 2) { // the drop
+        gsap.fromTo(".flash", { opacity: .9 }, { opacity: 0, duration: .45 });
+        gsap.fromTo(".reel", { scale: 1.05 }, { scale: 1, duration: .5, ease: "power3.out" });
+      }
+      i = (i + 1) % shots.length;
+    }
+    cut(); setInterval(cut, BAR * 1000);
+
+    // the beat everywhere: equaliser, the CTA and the lime row
+    gsap.utils.toArray(".eq i").forEach((b, k) => gsap.to(b, { height: () => gsap.utils.random(30, 100) + "%", duration: BEAT / 2, repeat: -1, yoyo: true, repeatRefresh: true, ease: "power1.inOut", delay: k * .05 }));
+    setInterval(() => {
+      gsap.fromTo(".btn.primary", { scale: 1.06 }, { scale: 1, duration: BEAT * .8, ease: "power2.out" });
+      gsap.fromTo(".logo .dot", { scale: 1.6 }, { scale: 1, duration: BEAT * .8, ease: "power2.out" });
+    }, BEAT * 1000);
+    gsap.to(".sticker.k1", { rotate: -2, duration: BEAT * 2, yoyo: true, repeat: -1, ease: "sine.inOut" });
+    gsap.to(".sticker.k2", { y: -8, duration: BEAT * 2, yoyo: true, repeat: -1, ease: "sine.inOut" });
+  })();
+</script>
+</body>
+</html>
