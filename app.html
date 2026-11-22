@@ -1,0 +1,441 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Showroom: dealer panel preview</title>
+<meta name="description" content="Preview of the Showroom dealer chat with sample data: Reel previews, brand kit and credits.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#050607">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050607'/%3E%3Crect x='8' y='15' width='16' height='2.5' fill='%23ff4a1c'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+  body { min-height: 100svh; }
+  .bar-top { position: sticky; top: 0; z-index: 40; display: flex; align-items: center; gap: 12px; height: 60px; padding-inline: var(--gut); background: rgba(5,6,7,.86); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .bar-top .where { color: var(--steel); font-size: 13.5px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; min-width: 0; }
+  .bar-top .sample { margin-inline-start: auto; }
+  .bar-top .back { font-size: 13px; color: var(--mist); white-space: nowrap; }
+  .bar-top .back:hover { color: var(--fog); }
+  @media (max-width: 640px) { .bar-top .where, .bar-top .back { display: none; } .bar-top .sample { font-size: 9.5px; padding: 4px 8px; } }
+  .notice { padding: 10px var(--gut); font-size: 13px; color: var(--warn); background: rgba(255,184,77,.06); border-bottom: 1px solid rgba(255,184,77,.18); }
+
+  .tabs { display: flex; gap: 4px; padding: 10px var(--gut); border-bottom: 1px solid var(--line); background: var(--black); position: sticky; top: 60px; z-index: 30; }
+  .tabs button { flex: 1; height: 38px; border-radius: 999px; font-size: 14px; color: var(--steel); border: 1px solid transparent; }
+  .tabs button[aria-selected="true"] { color: var(--fog); border-color: var(--line-2); background: var(--graphite); }
+
+  .shell { display: grid; }
+  .snav { display: none; }
+  .info { display: none; padding: 18px var(--gut) 40px; gap: 16px; align-content: start; }
+  .shell[data-view="chat"] .chatc { display: flex; }
+  .shell[data-view="brand"] .chatc, .shell[data-view="credits"] .chatc { display: none; }
+  .shell[data-view="brand"] .info, .shell[data-view="credits"] .info { display: grid; }
+  .shell[data-view="brand"] .cr, .shell[data-view="brand"] .inv { display: none; }
+  .shell[data-view="credits"] .bk { display: none; }
+  @media (min-width: 1100px) {
+    .tabs { display: none; }
+    .shell { grid-template-columns: 220px minmax(0, 1fr) 360px; height: calc(100svh - 60px - var(--nh, 41px)); }
+    .shell .chatc { display: flex !important; }
+    .shell .info { display: grid !important; overflow-y: auto; border-inline-start: 1px solid var(--line); padding: 20px; }
+    .shell .info > * { display: block !important; }
+    .snav { display: flex; flex-direction: column; gap: 2px; padding: 20px 14px; border-inline-end: 1px solid var(--line); }
+  }
+  .snav a { display: flex; align-items: center; gap: 12px; padding: 10px 12px; border-radius: 10px; color: var(--mist); font-size: 14.5px; }
+  .snav a:hover { background: rgba(255,255,255,.04); color: var(--fog); }
+  .snav a[aria-current="page"] { background: var(--graphite); color: var(--fog); }
+  .snav a svg { width: 18px; height: 18px; flex: none; }
+  .snav a[aria-current="page"] svg { color: var(--accent); }
+  .snav .me { margin-top: auto; display: flex; align-items: center; gap: 10px; padding: 12px; border-radius: 12px; border: 1px solid var(--line); font-size: 13px; }
+  .mark { width: 34px; height: 34px; border-radius: 10px; background: #6fd3ff; color: #0b0b0b; display: grid; place-items: center; font-weight: 600; flex: none; direction: ltr; }
+  .snav .me small { display: block; color: var(--steel); font-size: 11.5px; }
+
+  /* chat column */
+  .chatc { flex-direction: column; min-width: 0; height: calc(100svh - 60px - 59px - var(--nh, 41px)); }
+  @media (min-width: 1100px) { .chatc { height: auto; min-height: 0; } }
+  .ch-h { display: flex; align-items: center; gap: 12px; padding: 14px var(--gut); border-bottom: 1px solid var(--line); }
+  @media (min-width: 1100px) { .ch-h { padding-inline: 24px; } }
+  .ava { position: relative; width: 38px; height: 38px; border-radius: 12px; background: radial-gradient(circle at 30% 30%, #2a3038, #0d0f12); border: 1px solid var(--line-2); display: grid; place-items: center; flex: none; }
+  .ava i { width: 14px; height: 2px; background: var(--accent); box-shadow: 0 0 8px var(--accent); }
+  .ava::after { content: ""; position: absolute; inset-inline-end: -2px; bottom: -2px; width: 10px; height: 10px; border-radius: 50%; background: var(--ok); border: 2px solid var(--black); }
+  .ch-h b { display: block; font-weight: 500; font-size: 15px; }
+  .ch-h small { color: var(--steel); font-size: 12.5px; }
+  .ch-h .pill { margin-inline-start: auto; }
+  .thread { flex: 1; overflow-y: auto; overscroll-behavior: contain; padding: 20px var(--gut) 24px; display: flex; flex-direction: column; gap: 12px; }
+  @media (min-width: 1100px) { .thread { padding-inline: 28px; } }
+  .day { align-self: center; font-family: var(--mono); font-size: 10.5px; letter-spacing: .14em; color: var(--steel); text-transform: uppercase; padding: 4px 10px; border: 1px solid var(--line); border-radius: 999px; }
+  [dir="rtl"] .day { font-family: var(--sans); letter-spacing: 0; font-size: 12px; }
+  .m { max-width: min(86%, 520px); padding: 11px 14px; border-radius: 16px; font-size: 14.5px; line-height: 1.5; }
+  .m.me { align-self: flex-end; background: #2a1f1b; border: 1px solid rgba(255,74,28,.25); border-end-end-radius: 4px; }
+  .m.bot { align-self: flex-start; background: var(--graphite-2); border: 1px solid var(--line); border-end-start-radius: 4px; }
+  .m time { display: block; margin-top: 4px; font-family: var(--mono); font-size: 10px; color: var(--steel); text-align: end; direction: ltr; }
+  .clips { display: grid; grid-template-columns: repeat(4, 56px); gap: 6px; margin-bottom: 8px; }
+  .clip { position: relative; width: 56px; height: 84px; border-radius: 8px; background: #222 center / cover; border: 1px solid var(--line-2); }
+  .clip span { position: absolute; inset-inline-start: 4px; bottom: 4px; font-family: var(--mono); font-size: 9px; background: rgba(0,0,0,.6); padding: 1px 4px; border-radius: 4px; direction: ltr; }
+  .rcard { align-self: flex-start; display: grid; grid-template-columns: 116px minmax(0, 1fr); gap: 14px; width: min(100%, 520px); padding: 12px; border-radius: 18px; background: var(--graphite); border: 1px solid var(--line-2); }
+  .rthumb { position: relative; width: 116px; aspect-ratio: 9 / 16; border-radius: 12px; overflow: hidden; background: #111; }
+  .rthumb img, .rthumb video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .rthumb .play { position: absolute; inset: 0; display: grid; place-items: center; background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,.5)); }
+  .rthumb .play span { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,.92); color: #0b0b0b; display: grid; place-items: center; }
+  .rthumb .play svg { width: 16px; height: 16px; margin-inline-start: 2px; }
+  .rthumb .dur { position: absolute; bottom: 6px; inset-inline-end: 6px; font-family: var(--mono); font-size: 10px; background: rgba(0,0,0,.65); padding: 1px 5px; border-radius: 4px; z-index: 2; direction: ltr; }
+  .rbody { display: grid; gap: 8px; align-content: start; min-width: 0; }
+  .rbody h4 { font-size: 15px; font-weight: 500; }
+  .rmeta { display: flex; flex-wrap: wrap; gap: 6px; }
+  .qa { display: flex; gap: 8px; font-size: 12.5px; color: var(--ok); line-height: 1.4; }
+  .qa::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: var(--ok); box-shadow: 0 0 8px var(--ok); flex: none; margin-top: 5px; }
+  .acts { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+  .acts button { height: 34px; padding: 0 12px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 13px; color: var(--fog); transition: background .2s, border-color .2s; white-space: nowrap; }
+  .acts button:hover { background: rgba(255,255,255,.06); }
+  .acts button.go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 500; }
+  .acts button[disabled] { opacity: .45; cursor: default; }
+  @media (max-width: 420px) { .rcard { grid-template-columns: 92px minmax(0, 1fr); gap: 12px; } .rthumb { width: 92px; } }
+  .cap { margin-top: 8px; padding: 12px; border-radius: 12px; background: #0c0e11; border: 1px solid var(--line); font-size: 13.5px; color: var(--mist); direction: ltr; text-align: left; }
+  .typing { align-self: flex-start; display: flex; gap: 4px; padding: 14px 16px; border-radius: 16px; background: var(--graphite-2); border: 1px solid var(--line); }
+  .typing i { width: 6px; height: 6px; border-radius: 50%; background: var(--steel); animation: blink 1s infinite; }
+  .typing i:nth-child(2) { animation-delay: .15s; } .typing i:nth-child(3) { animation-delay: .3s; }
+  @keyframes blink { 0%, 80%, 100% { opacity: .25; } 40% { opacity: 1; } }
+  .composer { display: flex; align-items: center; gap: 8px; padding: 12px var(--gut) calc(12px + env(safe-area-inset-bottom)); border-top: 1px solid var(--line); background: var(--black); }
+  @media (min-width: 1100px) { .composer { padding-inline: 24px; } }
+  .composer .ib { width: 42px; height: 42px; border-radius: 50%; display: grid; place-items: center; color: var(--mist); border: 1px solid var(--line); flex: none; }
+  .composer .ib:hover { color: var(--fog); border-color: var(--line-2); }
+  .composer .ib svg { width: 18px; height: 18px; }
+  .composer input { flex: 1; min-width: 0; height: 44px; border-radius: 999px; border: 1px solid var(--line-2); background: var(--graphite); padding: 0 16px; font-size: 15px; outline: none; }
+  .composer input:focus { border-color: rgba(255,74,28,.6); }
+  .composer .send { background: var(--accent); color: var(--accent-ink); border-color: var(--accent); }
+  [dir="rtl"] .composer .send svg { transform: scaleX(-1); }
+  @media (max-width: 380px) { .composer .mic { display: none; } }
+
+  /* info cards */
+  .box { border: 1px solid var(--line); border-radius: 16px; background: linear-gradient(180deg, #0f1215, #0a0c0e); padding: 18px; }
+  .box + .box { margin-top: 0; }
+  @media (min-width: 1100px) { .info .box + .box { margin-top: 16px; } }
+  .box-h { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin-bottom: 14px; }
+  .box-h h3 { font-size: 15px; font-weight: 500; }
+  .box-h a, .box-h button { font-size: 13px; color: var(--accent); }
+  .who { display: flex; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .who b { display: block; font-weight: 500; direction: ltr; text-align: start; }
+  .who small { color: var(--steel); font-size: 12.5px; }
+  .kv { display: grid; gap: 0; }
+  .kv div { display: flex; justify-content: space-between; align-items: center; gap: 14px; padding: 10px 0; border-top: 1px solid var(--line); font-size: 14px; }
+  .kv span:first-child { color: var(--steel); }
+  .kv span:last-child { text-align: end; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .sw { display: inline-flex; align-items: center; gap: 8px; font-family: var(--mono); font-size: 13px; direction: ltr; }
+  .sw::before { content: ""; width: 14px; height: 14px; border-radius: 4px; background: #6fd3ff; }
+  .plan-l { display: flex; align-items: baseline; justify-content: space-between; gap: 10px; }
+  .plan-l b { font-size: 22px; font-weight: 400; letter-spacing: .06em; text-transform: uppercase; direction: ltr; }
+  .plan-l span { color: var(--steel); font-size: 13.5px; }
+  .meter { margin-top: 16px; }
+  .meter-l { display: flex; justify-content: space-between; font-size: 13.5px; color: var(--mist); margin-bottom: 8px; }
+  .meter-b { display: grid; grid-template-columns: repeat(12, 1fr); gap: 3px; direction: ltr; }
+  .meter-b i { height: 8px; border-radius: 2px; background: rgba(255,255,255,.1); }
+  .meter-b i.u { background: var(--accent); }
+  [dir="rtl"] .meter-b { direction: rtl; }
+  .bal { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .bal div { border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  .bal b { display: block; font-size: 28px; font-weight: 300; line-height: 1.1; }
+  .bal span { font-size: 12.5px; color: var(--steel); }
+  .ledger { margin-top: 16px; list-style: none; display: grid; }
+  .ledger li { display: grid; grid-template-columns: 44px 1fr auto; gap: 10px; align-items: baseline; padding: 10px 0; border-top: 1px solid var(--line); font-size: 13.5px; }
+  .ledger .v { font-family: var(--mono); font-size: 13px; direction: ltr; text-align: start; }
+  .ledger .v.p { color: var(--ok); } .ledger .v.n { color: #ff8a66; }
+  .ledger small { color: var(--steel); font-size: 12px; white-space: nowrap; }
+  .box .btn { width: 100%; margin-top: 16px; }
+  .link { display: flex; align-items: center; gap: 8px; padding: 10px 12px; border-radius: 12px; border: 1px dashed var(--line-2); font-family: var(--mono); font-size: 12px; color: var(--mist); direction: ltr; }
+  .link span { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .link button { color: var(--accent); font-family: var(--sans); font-size: 13px; flex: none; }
+  .stats3 { margin-top: 14px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stats3 div { border: 1px solid var(--line); border-radius: 12px; padding: 10px; }
+  .stats3 b { display: block; font-size: 22px; font-weight: 300; }
+  .stats3 span { font-size: 12px; color: var(--steel); }
+</style>
+</head>
+<body>
+<header class="bar-top">
+  <a class="logo" href="index.html" aria-label="Showroom">Show<i></i>room</a>
+  <span class="where" data-t="where">Dealer panel</span>
+  <span class="sample" data-t="sample">Sample data</span>
+  <div class="langs" role="group" aria-label="Language">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="de" aria-pressed="false">DE</button>
+    <button type="button" data-lang="fa" aria-pressed="false">FA</button>
+  </div>
+  <a class="back" href="index.html" data-t="back">Back to site</a>
+</header>
+<p class="notice" id="notice" data-t="notice">Preview with sample data. Nothing here is a real dealer, Reel or invoice.</p>
+
+<div class="tabs" role="tablist" data-ta="views">
+  <button type="button" role="tab" data-v="chat" aria-selected="true" data-t="t_chat">Chat</button>
+  <button type="button" role="tab" data-v="brand" aria-selected="false" data-t="t_brand">Brand kit</button>
+  <button type="button" role="tab" data-v="credits" aria-selected="false" data-t="t_cred">Credits</button>
+</div>
+
+<div class="shell" id="shell" data-view="chat">
+  <nav class="snav" data-ta="views">
+    <a href="#" aria-current="page"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 5h16v11H9l-5 4z"/></svg><span data-t="t_chat">Chat</span></a>
+    <a href="#"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="7" y="3" width="10" height="18" rx="2"/><path d="M11 10l3 2-3 2z"/></svg><span data-t="t_reels">Reels</span></a>
+    <a href="#bk"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3"/></svg><span data-t="t_brand">Brand kit</span></a>
+    <a href="#cr"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><rect x="3" y="6" width="18" height="13" rx="2"/><path d="M3 10h18"/></svg><span data-t="t_cred">Credits</span></a>
+    <a href="#inv"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M4 12h16M12 4v16"/></svg><span data-t="t_inv">Invite</span></a>
+    <div class="me"><span class="mark">K</span><span><span class="ltr">Kestrel Motors</span><small data-t="plan_s">Showroom plan</small></span></div>
+  </nav>
+
+  <section class="chatc" aria-labelledby="ch-name">
+    <div class="ch-h">
+      <span class="ava" aria-hidden="true"><i></i></span>
+      <div><b id="ch-name" data-t="asst">Showroom assistant</b><small data-t="online">Online, answers in your language</small></div>
+      <span class="pill" data-t="tg">Also in Telegram</span>
+    </div>
+    <div class="thread" id="thread" aria-live="polite">
+      <span class="day" data-t="today">Today</span>
+      <div class="m me">
+        <div class="clips" aria-hidden="true">
+          <span class="clip" style="background-image:url(assets/raw-front.jpg)"><span>0:06</span></span>
+          <span class="clip" style="background-image:url(assets/reel-light.jpg)"><span>0:05</span></span>
+          <span class="clip" style="background-image:url(assets/reel-wheel.jpg)"><span>0:04</span></span>
+          <span class="clip" style="background-image:url(assets/reel-front.jpg)"><span>0:05</span></span>
+        </div>
+        <span data-t="m1">New arrival: C-Class, white. Here are 4 clips.</span><time>09:41</time>
+      </div>
+      <div class="m bot"><span data-t="m2">Got them. Clip 3 shakes a little at the start, so I'll use its steady middle. I'm making a guess-the-car Reel at 120 BPM. This uses 1 of your 12 Reels this month.</span><time>09:41</time></div>
+      <div class="rcard" data-v="1">
+        <div class="rthumb"><img src="assets/reel-front.jpg" alt="" width="540" height="960"><button class="play" type="button" data-ta="play"><span><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></span></button><span class="dur">0:15</span></div>
+        <div class="rbody">
+          <h4 data-t="r1">C-Class, guess the car</h4>
+          <div class="rmeta"><span class="pill" data-t="v1">Version 1</span><span class="pill">120 BPM</span></div>
+          <p class="qa" data-t="qa1">Checked: 9.2 of 10. Cuts on the beat, text readable, no price on screen.</p>
+          <div class="acts"><button type="button" class="go" data-act="ok" data-t="b_ok">Approve</button><button type="button" data-act="ch" data-t="b_ch">Change</button><button type="button" data-act="ag" data-t="b_ag">Another version</button></div>
+        </div>
+      </div>
+      <div class="m me"><span data-t="m3">Make the music a bit calmer.</span><time>09:52</time></div>
+      <div class="m bot"><span data-t="m4">Done. Version 2 has a calmer track and the same shots. The first change is free.</span><time>09:53</time></div>
+      <div class="rcard" data-v="2">
+        <div class="rthumb"><img src="assets/reel-wheel.jpg" alt="" width="540" height="960"><button class="play" type="button" data-ta="play"><span><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4l13 8-13 8z"/></svg></span></button><span class="dur">0:15</span></div>
+        <div class="rbody">
+          <h4 data-t="r1">C-Class, guess the car</h4>
+          <div class="rmeta"><span class="pill acc" data-t="v2">Version 2</span><span class="pill" data-t="calm">Calmer track</span></div>
+          <p class="qa" data-t="qa2">Checked: 9.4 of 10.</p>
+          <div class="acts"><button type="button" class="go" data-act="ok" data-t="b_ok">Approve</button><button type="button" data-act="ch" data-t="b_ch">Change</button><button type="button" data-act="ag" data-t="b_ag">Another version</button></div>
+        </div>
+      </div>
+    </div>
+    <form class="composer" id="composer" autocomplete="off">
+      <button type="button" class="ib" data-ta="attach" aria-label="Attach clips"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M20 11.5l-8.2 8.2a5 5 0 01-7.1-7.1l8.5-8.5a3.3 3.3 0 014.7 4.7l-8.5 8.5a1.7 1.7 0 01-2.4-2.4l7.8-7.8"/></svg></button>
+      <input id="msg" type="text" data-tp="ph" placeholder="Write a message, or drop clips here" data-ta="ph" aria-label="Message">
+      <button type="button" class="ib mic" data-ta="voice" aria-label="Voice note"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="9" y="3" width="6" height="12" rx="3"/><path d="M5 11a7 7 0 0014 0M12 18v3"/></svg></button>
+      <button type="submit" class="ib send" data-ta="send" aria-label="Send"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M5 12h14M13 6l6 6-6 6"/></svg></button>
+    </form>
+  </section>
+
+  <aside class="info">
+    <div class="box bk" id="bk">
+      <div class="box-h"><h3 data-t="t_brand">Brand kit</h3><button type="button" data-say="kit" data-t="edit">Change in chat</button></div>
+      <div class="who"><span class="mark">K</span><div><b>Kestrel Motors</b><small data-t="from_logo">Colours taken from your logo</small></div></div>
+      <div class="kv">
+        <div><span data-t="k_acc">Accent</span><span class="sw">#6FD3FF</span></div>
+        <div><span>Instagram</span><span class="ltr">@kestrel.motors</span></div>
+        <div><span data-t="k_ph">Phone</span><span class="ltr">+44 20 0000 0000</span></div>
+        <div><span data-t="k_web">Website</span><span class="ltr">kestrel-motors.example</span></div>
+        <div><span data-t="k_lang">Text on screen</span><span data-t="l_en">English</span></div>
+        <div><span data-t="k_pl">Plates</span><span data-t="k_pl_v">As filmed</span></div>
+        <div><span data-t="k_pr">Prices on screen</span><span data-t="off">Off</span></div>
+      </div>
+    </div>
+    <div class="box cr" id="cr">
+      <div class="box-h"><h3 data-t="t_cred">Credits</h3><span class="sample" data-t="sample_s">Sample</span></div>
+      <div class="plan-l"><b>Showroom</b><span data-t="pp">€29 per month</span></div>
+      <div class="meter">
+        <div class="meter-l"><span data-t="rtm">Reels this month</span><span data-t="used">7 of 12 used</span></div>
+        <div class="meter-b" aria-hidden="true"><i class="u"></i><i class="u"></i><i class="u"></i><i class="u"></i><i class="u"></i><i class="u"></i><i class="u"></i><i></i><i></i><i></i><i></i><i></i></div>
+      </div>
+      <div class="bal">
+        <div><b data-t="n6">6</b><span data-t="cred_l">credits left</span></div>
+        <div><b data-t="d1">1 Dec</b><span data-t="renew">plan renews</span></div>
+      </div>
+      <ul class="ledger">
+        <li><span class="v p">+5</span><span data-t="l1">Invite reward: Autohaus Lindner</span><small data-t="d20">20 Nov</small></li>
+        <li><span class="v n">−2</span><span data-t="l2">Extra Reel: BMW X5</span><small data-t="d18">18 Nov</small></li>
+        <li><span class="v p">+1</span><span data-t="l3">Refund: Reel held by the quality check</span><small data-t="d12">12 Nov</small></li>
+        <li><span class="v p">+2</span><span data-t="l4">Welcome credits</span><small data-t="d01">1 Nov</small></li>
+      </ul>
+      <button type="button" class="btn ghost sm" data-say="topup" data-t="topup">Top up credits</button>
+    </div>
+    <div class="box inv" id="inv">
+      <div class="box-h"><h3 data-t="t_inv2">Invite a dealer</h3></div>
+      <p style="color:var(--mist);font-size:14px;margin-bottom:12px" data-t="inv_l">When a dealer you invite starts a first paid month, you get 5 credits and they get 2.</p>
+      <div class="link"><span>t.me/showroom_ahura_bot?start=inv_KESTREL</span><button type="button" data-say="copy" data-t="copy">Copy</button></div>
+      <div class="stats3">
+        <div><b data-t="n2">2</b><span data-t="joined">joined</span></div>
+        <div><b data-t="n1">1</b><span data-t="qual">qualified</span></div>
+        <div><b data-t="n5">5</b><span data-t="earned">credits earned</span></div>
+      </div>
+    </div>
+  </aside>
+</div>
+
+<script>
+window.T = {
+  en: {
+    _title: "Showroom: dealer panel preview", _desc: "Preview of the Showroom dealer chat with sample data: Reel previews, brand kit and credits.",
+    where: "Dealer panel", sample: "Sample data", sample_s: "Sample", back: "Back to site",
+    notice: "Preview with sample data. Nothing here is a real dealer, Reel or invoice.",
+    views: "Views", t_chat: "Chat", t_reels: "Reels", t_brand: "Brand kit", t_cred: "Credits", t_inv: "Invite", t_inv2: "Invite a dealer", plan_s: "Showroom plan",
+    asst: "Showroom assistant", online: "Online, answers in your language", tg: "Also in Telegram", today: "Today",
+    m1: "New arrival: C-Class, white. Here are 4 clips.",
+    m2: "Got them. Clip 3 shakes a little at the start, so I'll use its steady middle. I'm making a guess-the-car Reel at 120 BPM. This uses 1 of your 12 Reels this month.",
+    r1: "C-Class, guess the car", v1: "Version 1", v2: "Version 2", calm: "Calmer track",
+    qa1: "Checked: 9.2 of 10. Cuts on the beat, text readable, no price on screen.", qa2: "Checked: 9.4 of 10.",
+    b_ok: "Approve", b_ch: "Change", b_ag: "Another version", play: "Play preview",
+    m3: "Make the music a bit calmer.", m4: "Done. Version 2 has a calmer track and the same shots. The first change is free.",
+    ph: "Write a message, or drop clips here", attach: "Attach clips", voice: "Voice note", send: "Send",
+    done: "Here is your Reel: the original file, the caption and the hashtags. A good time to post today: 18:30.",
+    cap: "Fresh in: Mercedes-Benz C-Class in polar white. Come and see it this week. #mercedes #cclass #newarrival #kestrelmotors",
+    copycap: "Copy caption", dl: "Download file",
+    reply: "This is a preview with sample data. In the real chat, the assistant answers here.",
+    ask_ch: "Sure. Tell me what to change: music, shots, the first line or the template.",
+    ask_ag: "Making another version with other shots. This uses 1 credit.",
+    approved: "Approved", t_copy: "Copied (sample)", t_topup: "Sample only: top-ups are by invoice for now.", t_kit: "In the real chat you change the brand kit by just saying it.", t_dl: "Sample only: no file here.",
+    edit: "Change in chat", from_logo: "Colours taken from your logo",
+    k_acc: "Accent", k_ph: "Phone", k_web: "Website", k_lang: "Text on screen", l_en: "English", k_pl: "Plates", k_pl_v: "As filmed", k_pr: "Prices on screen", off: "Off",
+    pp: "€29 per month", rtm: "Reels this month", used: "7 of 12 used", n6: "6", cred_l: "credits left", d1: "1 Dec", renew: "plan renews",
+    l1: "Invite reward: Autohaus Lindner", l2: "Extra Reel: BMW X5", l3: "Refund: Reel held by the quality check", l4: "Welcome credits",
+    d20: "20 Nov", d18: "18 Nov", d12: "12 Nov", d01: "1 Nov", topup: "Top up credits",
+    inv_l: "When a dealer you invite starts a first paid month, you get 5 credits and they get 2.", copy: "Copy",
+    n2: "2", n1: "1", n5: "5", joined: "joined", qual: "qualified", earned: "credits earned"
+  },
+  de: {
+    _title: "Showroom: Händler-Panel (Vorschau)", _desc: "Vorschau des Showroom-Händlerchats mit Beispieldaten: Reel-Vorschauen, Brand-Kit und Credits.",
+    where: "Händler-Panel", sample: "Beispieldaten", sample_s: "Beispiel", back: "Zur Website",
+    notice: "Vorschau mit Beispieldaten. Händler, Reels und Rechnungen hier sind nicht echt.",
+    views: "Ansichten", t_chat: "Chat", t_reels: "Reels", t_brand: "Brand-Kit", t_cred: "Credits", t_inv: "Einladen", t_inv2: "Händler einladen", plan_s: "Paket Showroom",
+    asst: "Showroom-Assistent", online: "Online, antwortet in deiner Sprache", tg: "Auch in Telegram", today: "Heute",
+    m1: "Neu reingekommen: C-Klasse, weiß. Hier sind 4 Clips.",
+    m2: "Habe sie. Clip 3 wackelt am Anfang etwas, ich nehme die ruhige Mitte. Ich schneide ein Rate-das-Auto-Reel mit 120 BPM. Das ist 1 deiner 12 Reels in diesem Monat.",
+    r1: "C-Klasse, Rate das Auto", v1: "Version 1", v2: "Version 2", calm: "Ruhigere Musik",
+    qa1: "Geprüft: 9,2 von 10. Schnitte auf dem Beat, Text lesbar, kein Preis im Bild.", qa2: "Geprüft: 9,4 von 10.",
+    b_ok: "Freigeben", b_ch: "Ändern", b_ag: "Andere Version", play: "Vorschau abspielen",
+    m3: "Mach die Musik etwas ruhiger.", m4: "Erledigt. Version 2 hat ruhigere Musik und dieselben Shots. Die erste Änderung ist gratis.",
+    ph: "Nachricht schreiben oder Clips hierher ziehen", attach: "Clips anhängen", voice: "Sprachnachricht", send: "Senden",
+    done: "Hier ist dein Reel: Originaldatei, Caption und Hashtags. Gute Zeit zum Posten heute: 18:30.",
+    cap: "Fresh in: Mercedes-Benz C-Class in polar white. Come and see it this week. #mercedes #cclass #newarrival #kestrelmotors",
+    copycap: "Caption kopieren", dl: "Datei laden",
+    reply: "Das ist eine Vorschau mit Beispieldaten. Im echten Chat antwortet hier der Assistent.",
+    ask_ch: "Gern. Sag mir, was anders sein soll: Musik, Shots, erster Satz oder Vorlage.",
+    ask_ag: "Ich mache eine andere Version mit anderen Shots. Das kostet 1 Credit.",
+    approved: "Freigegeben", t_copy: "Kopiert (Beispiel)", t_topup: "Nur Beispiel: Aufladen geht vorerst per Rechnung.", t_kit: "Im echten Chat änderst du das Brand-Kit, indem du es einfach sagst.", t_dl: "Nur Beispiel: hier gibt es keine Datei.",
+    edit: "Im Chat ändern", from_logo: "Farben aus deinem Logo",
+    k_acc: "Akzent", k_ph: "Telefon", k_web: "Website", k_lang: "Text im Bild", l_en: "Englisch", k_pl: "Kennzeichen", k_pl_v: "Wie gefilmt", k_pr: "Preise im Bild", off: "Aus",
+    pp: "29 € pro Monat", rtm: "Reels in diesem Monat", used: "7 von 12 genutzt", cred_l: "Credits übrig", d1: "1. Dez.", renew: "Paket verlängert sich",
+    l1: "Einladungsbonus: Autohaus Lindner", l2: "Zusätzliches Reel: BMW X5", l3: "Erstattung: Reel von der Prüfung angehalten", l4: "Willkommens-Credits",
+    d20: "20. Nov.", d18: "18. Nov.", d12: "12. Nov.", d01: "1. Nov.", topup: "Credits aufladen",
+    inv_l: "Startet ein eingeladener Händler seinen ersten bezahlten Monat, bekommst du 5 Credits und er 2.", copy: "Kopieren",
+    joined: "dabei", qual: "qualifiziert", earned: "Credits verdient"
+  },
+  fa: {
+    _title: "Showroom: پیش‌نمایش پنل نمایشگاه", _desc: "پیش‌نمایش چت نمایشگاه در Showroom با داده‌های نمونه: پیش‌نمایش ریلز، کیت برند و اعتبار.",
+    where: "پنل نمایشگاه", sample: "داده‌ی نمونه", sample_s: "نمونه", back: "بازگشت به سایت",
+    notice: "این صفحه فقط پیش‌نمایش با داده‌های نمونه است. هیچ نمایشگاه، ریلز یا فاکتوری در آن واقعی نیست.",
+    views: "بخش‌ها", t_chat: "چت", t_reels: "ریلزها", t_brand: "کیت برند", t_cred: "اعتبار", t_inv: "دعوت", t_inv2: "یک نمایشگاه را دعوت کن", plan_s: "بسته‌ی Showroom",
+    asst: "دستیار Showroom", online: "آنلاین، به زبان خودت جواب می‌دهد", tg: "در تلگرام هم هست", today: "امروز",
+    m1: "تازه رسیده: سی‌کلاس سفید. این هم ۴ کلیپ.",
+    m2: "رسید. کلیپ ۳ اولش کمی می‌لرزد، برای همین از وسط ثابتش استفاده می‌کنم. یک ریلز «حدس بزن کدام ماشین» با ۱۲۰ ضرب در دقیقه می‌سازم. یکی از ۱۲ ریلز این ماهت کم می‌شود.",
+    r1: "سی‌کلاس، حدس بزن کدام ماشین", v1: "نسخه‌ی ۱", v2: "نسخه‌ی ۲", calm: "آهنگ آرام‌تر",
+    qa1: "بررسی شد: ۹٫۲ از ۱۰. برش‌ها روی ضرب، متن خوانا، بدون قیمت روی تصویر.", qa2: "بررسی شد: ۹٫۴ از ۱۰.",
+    b_ok: "تأیید", b_ch: "تغییر", b_ag: "نسخه‌ی دیگر", play: "پخش پیش‌نمایش",
+    m3: "آهنگ را کمی آرام‌تر کن.", m4: "انجام شد. نسخه‌ی ۲ آهنگ آرام‌تری دارد و همان نماها را. اولین تغییر رایگان است.",
+    ph: "پیام بنویس یا کلیپ‌ها را اینجا بینداز", attach: "فرستادن کلیپ", voice: "پیام صوتی", send: "فرستادن",
+    done: "این هم ریلزت: فایل اصلی، متن پست و هشتگ‌ها. زمان خوب برای پست امروز: ساعت ۱۸:۳۰.",
+    cap: "Fresh in: Mercedes-Benz C-Class in polar white. Come and see it this week. #mercedes #cclass #newarrival #kestrelmotors",
+    copycap: "کپی متن پست", dl: "دانلود فایل",
+    reply: "این فقط پیش‌نمایش با داده‌های نمونه است. در چت واقعی، دستیار همین‌جا جواب می‌دهد.",
+    ask_ch: "حتماً. بگو چه چیزی عوض شود: آهنگ، نماها، جمله‌ی اول یا قالب.",
+    ask_ag: "یک نسخه‌ی دیگر با نماهای دیگر می‌سازم. یک اعتبار کم می‌شود.",
+    approved: "تأیید شد", t_copy: "کپی شد (نمونه)", t_topup: "فقط نمونه: فعلاً شارژ اعتبار با فاکتور است.", t_kit: "در چت واقعی، کیت برند را فقط با گفتنش عوض می‌کنی.", t_dl: "فقط نمونه: اینجا فایلی نیست.",
+    edit: "تغییر در چت", from_logo: "رنگ‌ها از لوگوی تو گرفته شده",
+    k_acc: "رنگ اصلی", k_ph: "تلفن", k_web: "سایت", k_lang: "زبان متن روی تصویر", l_en: "انگلیسی", k_pl: "پلاک", k_pl_v: "همان‌طور که فیلم گرفتی", k_pr: "قیمت روی تصویر", off: "خاموش",
+    pp: "۲۹ یورو در ماه", rtm: "ریلزهای این ماه", used: "۷ از ۱۲ استفاده شده", n6: "۶", cred_l: "اعتبار مانده", d1: "۱ دسامبر", renew: "تمدید بسته",
+    l1: "جایزه‌ی دعوت: Autohaus Lindner", l2: "ریلز اضافه: BMW X5", l3: "برگشت اعتبار: ریلزی که بررسی کیفیت نگه داشت", l4: "اعتبار خوش‌آمد",
+    d20: "۲۰ نوامبر", d18: "۱۸ نوامبر", d12: "۱۲ نوامبر", d01: "۱ نوامبر", topup: "شارژ اعتبار",
+    inv_l: "وقتی نمایشگاهی که دعوت کرده‌ای اولین ماه پولی‌اش را شروع کند، تو ۵ اعتبار و او ۲ اعتبار می‌گیرد.", copy: "کپی",
+    n2: "۲", n1: "۱", n5: "۵", joined: "عضو شدند", qual: "شرط را کامل کردند", earned: "اعتبار گرفتی"
+  }
+};
+</script>
+<script src="assets/site.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function () {
+  const SR = window.SR, G = window.gsap && !SR.reduce ? window.gsap : null;
+  const shell = document.getElementById("shell"), thread = document.getElementById("thread");
+  const nh = () => document.documentElement.style.setProperty("--nh", document.getElementById("notice").offsetHeight + "px");
+  nh(); addEventListener("resize", nh); SR.onLang(nh);
+
+  // tabs (phone and tablet)
+  document.querySelectorAll(".tabs button").forEach((b) => b.addEventListener("click", () => {
+    document.querySelectorAll(".tabs button").forEach((x) => x.setAttribute("aria-selected", String(x === b)));
+    shell.dataset.view = b.dataset.v;
+    if (G) G.from(b.dataset.v === "chat" ? ".chatc" : ".info", { opacity: 0, y: 10, duration: .5, ease: "power3.out" });
+  }));
+
+  const now = () => { const d = new Date(); return String(d.getHours()).padStart(2, "0") + ":" + String(d.getMinutes()).padStart(2, "0"); };
+  const down = () => thread.scrollTo({ top: thread.scrollHeight, behavior: SR.reduce ? "auto" : "smooth" });
+  function add(html, cls) {
+    const el = document.createElement("div"); el.className = cls; el.innerHTML = html;
+    thread.appendChild(el);
+    if (G) G.from(el, { y: 14, opacity: 0, duration: .5, ease: "power3.out" });
+    down(); return el;
+  }
+  function bot(key, extra) {
+    const ty = add("<i></i><i></i><i></i>", "typing");
+    setTimeout(() => { ty.remove(); add(`<span data-t="${key}">${SR.tr(key)}</span>${extra || ""}<time>${now()}</time>`, "m bot"); }, SR.reduce ? 50 : 900);
+  }
+
+  // composer
+  document.getElementById("composer").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const inp = document.getElementById("msg"), v = inp.value.trim();
+    if (!v) return;
+    const me = add("", "m me"); const s = document.createElement("span"); s.textContent = v; me.appendChild(s);
+    const t = document.createElement("time"); t.textContent = now(); me.appendChild(t);
+    inp.value = "";
+    bot("reply");
+  });
+
+  // preview cards: play, approve, change, another version
+  thread.addEventListener("click", (e) => {
+    const p = e.target.closest(".play");
+    if (p) {
+      const box = p.parentElement;
+      const v = document.createElement("video");
+      v.src = "assets/reel-loop.mp4"; v.muted = true; v.loop = true; v.playsInline = true; v.setAttribute("playsinline", "");
+      v.poster = box.querySelector("img").getAttribute("src");
+      box.querySelector("img").replaceWith(v); p.remove();
+      const pr = v.play(); if (pr && pr.catch) pr.catch(() => {});
+      return;
+    }
+    const b = e.target.closest(".acts button"); if (!b) return;
+    const card = b.closest(".rcard");
+    if (b.dataset.act === "ok") {
+      card.querySelectorAll(".acts button").forEach((x) => (x.disabled = true));
+      b.textContent = SR.tr("approved"); b.dataset.t = "approved";
+      bot("done", `<div class="cap" data-t="cap">${SR.tr("cap")}</div><div class="acts"><button type="button" class="go" data-act="copy" data-t="copycap">${SR.tr("copycap")}</button><button type="button" data-act="dl" data-t="dl">${SR.tr("dl")}</button></div>`);
+    } else if (b.dataset.act === "ch") bot("ask_ch");
+    else if (b.dataset.act === "ag") bot("ask_ag");
+    else if (b.dataset.act === "copy") SR.toast(SR.tr("t_copy"));
+    else if (b.dataset.act === "dl") SR.toast(SR.tr("t_dl"));
+  });
+  document.querySelectorAll("[data-say]").forEach((b) => b.addEventListener("click", () => SR.toast(SR.tr({ kit: "t_kit", topup: "t_topup", copy: "t_copy" }[b.dataset.say]))));
+  document.querySelectorAll(".snav a").forEach((a) => a.addEventListener("click", (e) => { if (a.getAttribute("href") === "#") e.preventDefault(); }));
+
+  // entrance
+  if (G) {
+    G.from(".thread > *", { y: 16, opacity: 0, stagger: .12, duration: .7, ease: "power3.out", delay: .15 });
+    G.from(".info .box", { y: 20, opacity: 0, stagger: .1, duration: .8, ease: "expo.out", delay: .3 });
+    G.from(".meter-b i.u", { scaleY: 0, transformOrigin: "bottom", stagger: .05, duration: .4, ease: "power2.out", delay: .6 });
+  }
+  window.SRA = { count: () => thread.querySelectorAll(".m").length };
+})();
+</script>
+</body>
+</html>
