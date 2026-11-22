@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Showroom · Hero A · Night shift</title>
+<meta name="description" content="Showroom: send raw clips in a chat, get beat-synced branded Reels for your dealership.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500&family=JetBrains+Mono:wght@400&family=Vazirmatn:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #050607;
+    --graphite: #111417;
+    --graphite-2: #1b1f24;
+    --steel: #8a929c;
+    --fog: #e9ecef;
+    --accent: #ff4a1c;
+    --sans: "Inter Tight", system-ui, sans-serif;
+    --mono: "JetBrains Mono", ui-monospace, monospace;
+  }
+  [dir="rtl"] { --sans: "Vazirmatn", system-ui, sans-serif; }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { background: var(--black); color: var(--fog); overflow-x: clip; }
+  body { font-family: var(--sans); -webkit-font-smoothing: antialiased; }
+  a { color: inherit; text-decoration: none; }
+
+  .hero { position: relative; min-height: 100svh; display: grid; grid-template-rows: auto 1fr auto; overflow: hidden; isolation: isolate; }
+
+  /* --- "footage" placeholder: replace .film with <video autoplay muted loop playsinline> --- */
+  .film { position: absolute; inset: 0; z-index: -1; background:
+      radial-gradient(120% 70% at 70% 62%, #20262d 0%, #0c0f12 55%, var(--black) 100%); }
+  .film::before { /* light sweep across the bodywork */
+    content: ""; position: absolute; inset: -20% -60%;
+    background: linear-gradient(100deg, transparent 40%, rgba(255,255,255,.07) 48%, rgba(255,255,255,.16) 50%, rgba(255,255,255,.07) 52%, transparent 60%);
+    transform: translateX(var(--sweep, -40%)); }
+  .floor { position: absolute; left: 0; right: 0; bottom: 0; height: 42%;
+    background: linear-gradient(180deg, transparent, rgba(0,0,0,.85)),
+      repeating-linear-gradient(90deg, rgba(255,255,255,.025) 0 1px, transparent 1px 120px); }
+  .streaks { position: absolute; inset: 0; overflow: hidden; }
+  .streak { position: absolute; height: 1px; width: 38vw; left: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,.55), transparent); opacity: .5; }
+  .streak.hot { background: linear-gradient(90deg, transparent, var(--accent), transparent); opacity: .7; }
+  .car { position: absolute; left: 50%; bottom: 17svh; width: min(120vw, 1180px); transform: translateX(-46%); }
+  .car svg { width: 100%; height: auto; display: block; overflow: visible; }
+  .grain { position: absolute; inset: -50%; opacity: .09; pointer-events: none; mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E"); }
+  .vignette { position: absolute; inset: 0; background: radial-gradient(90% 80% at 50% 45%, transparent 50%, rgba(0,0,0,.75)); }
+  .bar { position: absolute; left: 0; right: 0; height: 4.5svh; background: var(--black); z-index: 1; }
+  .bar.top { top: 0; } .bar.bottom { bottom: 0; }
+
+  /* --- chrome --- */
+  nav { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; gap: 16px;
+    padding: calc(4.5svh + 14px) clamp(16px, 4vw, 56px) 0; }
+  .logo { font-weight: 500; letter-spacing: .32em; font-size: 13px; text-transform: uppercase; }
+  [dir="rtl"] .logo { letter-spacing: .05em; }
+  .logo b { color: var(--accent); font-weight: 500; }
+  .langs { display: flex; gap: 4px; font-family: var(--mono); font-size: 11px; }
+  .langs button { background: none; border: 1px solid transparent; color: var(--steel); padding: 6px 8px; border-radius: 999px; cursor: pointer; font: inherit; }
+  .langs button[aria-pressed="true"] { color: var(--fog); border-color: rgba(255,255,255,.18); }
+
+  .copy { align-self: end; z-index: 2; padding: 0 clamp(16px, 4vw, 56px); max-width: 1100px; padding-bottom: 6svh; }
+  .kicker { font-family: var(--mono); font-size: 11px; letter-spacing: .18em; text-transform: uppercase; color: var(--steel); display: flex; align-items: center; gap: 10px; margin-bottom: 22px; }
+  [dir="rtl"] .kicker { letter-spacing: 0; font-family: var(--sans); }
+  .rec { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); box-shadow: 0 0 12px var(--accent); }
+  h1 { font-weight: 300; font-size: clamp(42px, 9.4vw, 128px); line-height: .96; letter-spacing: -.035em; }
+  [dir="rtl"] h1 { letter-spacing: 0; line-height: 1.2; font-size: clamp(38px, 8.4vw, 112px); }
+  h1 .line { display: block; overflow: hidden; padding-bottom: .06em; }
+  h1 .line > span { display: inline-block; }
+  h1 em { font-style: normal; color: var(--accent); }
+  .sub { margin-top: 22px; max-width: 34ch; font-size: clamp(15px, 1.4vw, 18px); line-height: 1.55; color: #b9c0c8; }
+  .actions { margin-top: 30px; display: flex; flex-wrap: wrap; gap: 12px; }
+  .btn { display: inline-flex; align-items: center; gap: 10px; height: 52px; padding: 0 24px; border-radius: 999px; font-size: 15px; font-weight: 500; transition: transform .2s, background .2s; }
+  .btn.primary { background: var(--accent); color: #0b0b0b; }
+  .btn.primary:hover { transform: translateY(-2px); }
+  .btn.ghost { border: 1px solid rgba(255,255,255,.22); color: var(--fog); }
+  .btn.ghost:hover { background: rgba(255,255,255,.06); }
+  .btn svg { width: 18px; height: 18px; }
+  [dir="rtl"] .btn .arrow { transform: scaleX(-1); }
+
+  /* --- timeline: the beat --- */
+  .timeline { position: relative; z-index: 2; display: flex; align-items: center; gap: 16px; padding: 0 clamp(16px, 4vw, 56px) calc(4.5svh + 16px); font-family: var(--mono); font-size: 11px; color: var(--steel); }
+  .tc { min-width: 9ch; color: var(--fog); }
+  .ticks { flex: 1; display: flex; justify-content: space-between; align-items: flex-end; gap: 3px; height: 18px; min-width: 0; overflow: hidden; }
+  .tick { flex: 0 0 2px; height: 6px; background: rgba(255,255,255,.16); border-radius: 1px; }
+  .tick.bar1 { height: 12px; background: rgba(255,255,255,.3); }
+  .tick.on { background: var(--accent); }
+  .bpm { white-space: nowrap; }
+  @media (max-width: 560px) { .bpm { display: none; } .car { bottom: 58svh; width: 140vw; transform: translateX(-50%); } .copy { padding-bottom: 4svh; } }
+  @media (prefers-reduced-motion: reduce) { .streak { display: none; } }
+</style>
+</head>
+<body>
+<section class="hero" aria-label="Showroom">
+  <div class="film" aria-hidden="true">
+    <!-- LOCAL SESSION: replace this whole .film block with
+         <video class="film" src="footage/hero-a.mp4" autoplay muted loop playsinline poster="footage/hero-a.jpg"></video> -->
+    <div class="floor"></div>
+    <div class="streaks"></div>
+    <div class="car">
+      <svg viewBox="0 0 1000 300" role="img" aria-label="Car silhouette">
+        <defs>
+          <linearGradient id="body" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0" stop-color="#3a424b"/><stop offset=".45" stop-color="#171b20"/><stop offset="1" stop-color="#07090b"/>
+          </linearGradient>
+          <linearGradient id="rim" x1="0" x2="1">
+            <stop offset="0" stop-color="#ffffff" stop-opacity="0"/><stop offset=".5" stop-color="#ffffff" stop-opacity=".7"/><stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+          </linearGradient>
+          <radialGradient id="glow" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ff4a1c" stop-opacity=".9"/><stop offset="1" stop-color="#ff4a1c" stop-opacity="0"/></radialGradient>
+        </defs>
+        <ellipse cx="500" cy="262" rx="470" ry="22" fill="#000" opacity=".8"/>
+        <path fill="url(#body)" d="M40,226 C40,200 62,186 112,178 L262,164 C322,122 402,92 502,88 C592,85 652,100 722,140 L862,160 C922,168 956,186 960,214 L962,230 C962,239 955,243 945,243 L880,243 A70,70 0 0 0 740,243 L330,243 A70,70 0 0 0 190,243 L60,243 C48,243 40,238 40,226 Z"/>
+        <path fill="#05070a" opacity=".9" d="M300,164 C352,128 422,108 502,105 C572,104 622,116 666,143 L640,160 Z"/>
+        <path class="edge" fill="none" stroke="url(#rim)" stroke-width="2" d="M112,178 L262,164 C322,122 402,92 502,88 C592,85 652,100 722,140 L862,160"/>
+        <circle cx="260" cy="243" r="56" fill="#0a0c0f" stroke="#2b3138" stroke-width="6"/>
+        <circle cx="810" cy="243" r="56" fill="#0a0c0f" stroke="#2b3138" stroke-width="6"/>
+        <circle cx="260" cy="243" r="26" fill="none" stroke="#3a424b" stroke-width="2"/>
+        <circle cx="810" cy="243" r="26" fill="none" stroke="#3a424b" stroke-width="2"/>
+        <rect class="tail" x="938" y="192" width="22" height="6" rx="3" fill="#ff4a1c"/>
+        <ellipse class="tailglow" cx="958" cy="195" rx="60" ry="24" fill="url(#glow)" opacity=".6"/>
+      </svg>
+    </div>
+    <div class="vignette"></div>
+    <div class="grain"></div>
+  </div>
+  <div class="bar top" aria-hidden="true"></div>
+  <div class="bar bottom" aria-hidden="true"></div>
+
+  <nav>
+    <a class="logo" href="#">Show<b>·</b>room</a>
+    <div class="langs" role="group" aria-label="Language">
+      <button data-lang="en" aria-pressed="true">EN</button>
+      <button data-lang="de" aria-pressed="false">DE</button>
+      <button data-lang="fa" aria-pressed="false">FA</button>
+    </div>
+  </nav>
+
+  <div class="copy">
+    <p class="kicker"><span class="rec"></span><span data-t="kicker">Reels studio for car dealers</span></p>
+    <h1>
+      <span class="line"><span data-t="h1a">Every car.</span></span>
+      <span class="line"><span data-t="h1b">Cut to <em>the beat.</em></span></span>
+    </h1>
+    <p class="sub" data-t="sub">Send your raw clips in a chat. Get back branded Reels, cut on every beat, ready to post.</p>
+    <div class="actions">
+      <a class="btn primary" href="#chat"><span data-t="cta">Start in Telegram</span>
+        <svg class="arrow" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a class="btn ghost" href="#reel" data-t="cta2">Watch a Reel</a>
+    </div>
+  </div>
+
+  <div class="timeline" aria-hidden="true">
+    <span class="tc">00:00:00</span>
+    <div class="ticks"></div>
+    <span class="bpm">120 BPM · 1080×1920</span>
+  </div>
+</section>
+
+<script>
+  const T = {
+    en: { kicker: "Reels studio for car dealers", h1a: "Every car.", h1b: 'Cut to <em>the beat.</em>', sub: "Send your raw clips in a chat. Get back branded Reels, cut on every beat, ready to post.", cta: "Start in Telegram", cta2: "Watch a Reel" },
+    de: { kicker: "Reels-Studio für Autohändler", h1a: "Jedes Auto.", h1b: 'Im <em>Takt geschnitten.</em>', sub: "Schick deine Rohclips im Chat. Zurück kommen Reels in deinem Branding, auf jeden Beat geschnitten, fertig zum Posten.", cta: "In Telegram starten", cta2: "Reel ansehen" },
+    fa: { kicker: "استودیوی ریلز برای نمایشگاه‌های خودرو", h1a: "هر ماشین،", h1b: 'روی <em>ضرب آهنگ.</em>', sub: "کلیپ‌های خامت را در چت بفرست. ریلز آماده با برند خودت تحویل بگیر، هر برش روی ضرب.", cta: "شروع در تلگرام", cta2: "دیدن یک ریلز" }
+  };
+  function setLang(l) {
+    document.documentElement.lang = l;
+    document.documentElement.dir = l === "fa" ? "rtl" : "ltr";
+    document.querySelectorAll("[data-t]").forEach(el => el.innerHTML = T[l][el.dataset.t]);
+    document.querySelectorAll(".langs button").forEach(b => b.setAttribute("aria-pressed", b.dataset.lang === l));
+    if (window.gsap && !reduce) gsap.fromTo("h1 .line > span", { yPercent: 105 }, { yPercent: 0, duration: .9, ease: "expo.out", stagger: .08 });
+  }
+  document.querySelectorAll(".langs button").forEach(b => b.onclick = () => setLang(b.dataset.lang));
+
+  // beat ticks
+  const ticks = document.querySelector(".ticks");
+  const N = 48;
+  for (let i = 0; i < N; i++) { const t = document.createElement("i"); t.className = "tick" + (i % 4 === 0 ? " bar1" : ""); ticks.appendChild(t); }
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+  (function () {
+    if (!window.gsap || reduce) return;
+    const BEAT = 0.5; // 120 BPM
+    const tl = gsap.timeline({ defaults: { ease: "expo.out" } });
+    tl.from(".car svg", { xPercent: -30, opacity: 0, duration: 2.2, ease: "power3.out" })
+      .from("h1 .line > span", { yPercent: 105, duration: 1.1, stagger: .12 }, .3)
+      .from(".kicker, .sub, .actions, nav, .timeline", { opacity: 0, y: 14, duration: 1, stagger: .08 }, .6)
+      .from(".bar.top", { yPercent: -100, duration: 1.2 }, 0)
+      .from(".bar.bottom", { yPercent: 100, duration: 1.2 }, 0);
+
+    // light sweep over the bodywork, every 4 bars
+    const film = document.querySelector(".film");
+    gsap.fromTo(film, { "--sweep": "-45%" }, { "--sweep": "45%", duration: 3.2, ease: "power2.inOut", repeat: -1, repeatDelay: BEAT * 4, delay: 1 });
+
+    // road streaks
+    const box = document.querySelector(".streaks");
+    function streak() {
+      const s = document.createElement("span");
+      s.className = "streak" + (Math.random() < .18 ? " hot" : "");
+      s.style.top = (58 + Math.random() * 34) + "%";
+      box.appendChild(s);
+      gsap.fromTo(s, { x: 0 }, { x: -(innerWidth * 1.8), duration: .9 + Math.random() * .8, ease: "none", onComplete: () => s.remove() });
+    }
+    setInterval(streak, 260);
+
+    // the beat: a tick per beat, the tail light and the REC dot pulse on the bar
+    const all = [...document.querySelectorAll(".tick")];
+    const tc = document.querySelector(".tc");
+    let b = 0; const t0 = performance.now();
+    setInterval(() => {
+      all.forEach(t => t.classList.remove("on"));
+      all[b % all.length].classList.add("on");
+      if (b % 4 === 0) {
+        gsap.fromTo(".tailglow", { opacity: 1 }, { opacity: .45, duration: BEAT * 2, ease: "power2.out" });
+        gsap.fromTo(".rec", { scale: 1.8 }, { scale: 1, duration: BEAT, ease: "power2.out" });
+      }
+      b++;
+    }, BEAT * 1000);
+    gsap.ticker.add(() => {
+      const s = (performance.now() - t0) / 1000;
+      const f = Math.floor((s % 1) * 30);
+      tc.textContent = "00:" + String(Math.floor(s) % 60).padStart(2, "0") + ":" + String(f).padStart(2, "0");
+    });
+
+    // a little parallax on pointer
+    addEventListener("pointermove", e => {
+      const x = e.clientX / innerWidth - .5;
+      gsap.to(".car svg", { x: x * -30, duration: 1.2, ease: "power3.out" });
+    });
+  })();
+</script>
+</body>
+</html>
