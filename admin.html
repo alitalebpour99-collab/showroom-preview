@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en" dir="ltr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Showroom: owner panel preview</title>
+<meta name="description" content="Preview of the Showroom owner panel with sample data: approvals, dealers, costs, quality failures and referrals.">
+<meta name="robots" content="noindex">
+<meta name="theme-color" content="#050607">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='8' fill='%23050607'/%3E%3Crect x='8' y='15' width='16' height='2.5' fill='%23ff4a1c'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter+Tight:wght@300;400;500;600&family=JetBrains+Mono:wght@400;500&family=Vazirmatn:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="assets/site.css">
+<style>
+  .bar-top { position: sticky; top: 0; z-index: 40; display: flex; align-items: center; gap: 12px; height: 60px; padding-inline: var(--gut); background: rgba(5,6,7,.86); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); border-bottom: 1px solid var(--line); }
+  .bar-top .where { color: var(--steel); font-size: 13.5px; white-space: nowrap; }
+  .bar-top .sample { margin-inline-start: auto; }
+  .bar-top .back { font-size: 13px; color: var(--mist); white-space: nowrap; }
+  @media (max-width: 640px) { .bar-top .where, .bar-top .back { display: none; } .bar-top .sample { font-size: 9.5px; padding: 4px 8px; } }
+  .notice { padding: 10px var(--gut); font-size: 13px; color: var(--warn); background: rgba(255,184,77,.06); border-bottom: 1px solid rgba(255,184,77,.18); }
+  main { padding-block: 28px 64px; }
+  .head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 16px; margin-bottom: 22px; }
+  .head h1 { font-weight: 300; font-size: clamp(30px, 4vw, 48px); letter-spacing: -.02em; line-height: 1.1; }
+  [dir="rtl"] .head h1 { letter-spacing: 0; }
+  .head p { color: var(--steel); font-size: 14px; margin-top: 6px; }
+  .seg { display: inline-flex; padding: 3px; border-radius: 999px; border: 1px solid var(--line-2); }
+  .seg button { height: 34px; padding: 0 16px; border-radius: 999px; font-size: 13.5px; color: var(--steel); }
+  .seg button[aria-pressed="true"] { background: var(--fog); color: var(--accent-ink); }
+  .kpis { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1px; background: var(--line); border: 1px solid var(--line); border-radius: 18px; overflow: hidden; margin-bottom: 20px; }
+  @media (min-width: 700px) { .kpis { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
+  @media (min-width: 1100px) { .kpis { grid-template-columns: repeat(5, minmax(0, 1fr)); } }
+  .kpi { background: var(--black); padding: 18px 18px 16px; min-width: 0; }
+  .kpi span { display: block; font-size: 12.5px; color: var(--steel); }
+  .kpi b { display: block; margin-top: 6px; font-size: clamp(28px, 3vw, 38px); font-weight: 300; letter-spacing: -.02em; line-height: 1.1; }
+  .kpi.bad b { color: #ff8a66; }
+  .kpi small { display: block; margin-top: 4px; font-size: 12px; color: var(--steel); }
+  .kpi:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  @media (min-width: 700px) { .kpi:last-child:nth-child(odd) { grid-column: auto; } }
+  .cols { display: grid; gap: 20px; }
+  @media (min-width: 1100px) { .cols { grid-template-columns: minmax(0, 1.45fr) minmax(0, 1fr); align-items: start; } }
+  .col { display: grid; gap: 20px; min-width: 0; }
+  .box { border: 1px solid var(--line); border-radius: 18px; background: linear-gradient(180deg, #0f1215, #0a0c0e); padding: 18px; min-width: 0; }
+  .box-h { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin-bottom: 14px; }
+  .box-h h2 { font-size: 16px; font-weight: 500; display: flex; align-items: center; gap: 10px; }
+  .count { font-family: var(--mono); font-size: 11px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 999px; display: inline-grid; place-items: center; background: var(--accent); color: var(--accent-ink); }
+  .box-h small { color: var(--steel); font-size: 12.5px; }
+
+  /* approvals */
+  .ap { display: grid; grid-template-columns: 44px minmax(0, 1fr); gap: 12px; padding: 14px 0; border-top: 1px solid var(--line); align-items: center; }
+  .ap:first-of-type { border-top: 0; padding-top: 0; }
+  .ap .ic { width: 44px; height: 44px; border-radius: 12px; display: grid; place-items: center; background: var(--graphite-2); border: 1px solid var(--line); overflow: hidden; }
+  .ap .ic img { width: 100%; height: 100%; object-fit: cover; }
+  .ap .ic svg { width: 20px; height: 20px; color: var(--mist); }
+  .ap b { display: block; font-weight: 500; font-size: 14.5px; }
+  .ap span.d { display: block; color: var(--steel); font-size: 13px; }
+  .ap .acts { grid-column: 1 / -1; display: flex; flex-wrap: wrap; gap: 6px; }
+  @media (min-width: 640px) { .ap { grid-template-columns: 44px minmax(0, 1fr) auto; } .ap .acts { grid-column: auto; } }
+  .acts button { height: 34px; padding: 0 14px; border-radius: 999px; border: 1px solid var(--line-2); font-size: 13px; white-space: nowrap; }
+  .acts button:hover { background: rgba(255,255,255,.06); }
+  .acts button.go { background: var(--accent); border-color: var(--accent); color: var(--accent-ink); font-weight: 500; }
+  .empty { color: var(--steel); font-size: 14px; padding: 8px 0; display: none; }
+
+  /* tables that become cards on phones */
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th { text-align: start; font-weight: 400; font-size: 12px; color: var(--steel); padding: 0 10px 10px; white-space: nowrap; }
+  td { padding: 12px 10px; border-top: 1px solid var(--line); vertical-align: middle; }
+  th:first-child, td:first-child { padding-inline-start: 0; }
+  th:last-child, td:last-child { padding-inline-end: 0; }
+  td .nm { font-weight: 500; direction: ltr; unicode-bidi: isolate; }
+  td .sub { display: block; color: var(--steel); font-size: 12px; }
+  .badges { display: flex; flex-wrap: wrap; gap: 6px; }
+  .mono { font-family: var(--mono); font-size: 13px; direction: ltr; unicode-bidi: isolate; }
+  @media (max-width: 767px) {
+    table, tbody, tr, td { display: block; width: 100%; }
+    thead { display: none; }
+    tr { padding: 12px 0; border-top: 1px solid var(--line); }
+    tr:first-child { border-top: 0; padding-top: 0; }
+    td { border: 0; padding: 4px 0; display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    td::before { content: attr(data-label); color: var(--steel); font-size: 12.5px; flex: none; }
+    td.first { display: block; padding-bottom: 6px; }
+    td.first::before { content: none; }
+  }
+
+  /* costs */
+  .chart { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; align-items: end; height: 150px; padding-top: 8px; direction: ltr; }
+  [dir="rtl"] .chart { direction: rtl; }
+  .chart .c { display: grid; grid-template-rows: 1fr auto auto; gap: 6px; height: 100%; text-align: center; min-width: 0; }
+  .chart .c i { align-self: end; display: block; border-radius: 6px 6px 2px 2px; background: linear-gradient(180deg, rgba(255,255,255,.28), rgba(255,255,255,.12)); transform-origin: bottom; }
+  .chart .c.now i { background: linear-gradient(180deg, #ff6a40, var(--accent)); box-shadow: 0 0 18px rgba(255,74,28,.35); }
+  .chart .c span { font-family: var(--mono); font-size: 10.5px; color: var(--steel); }
+  .chart .c em { font-style: normal; font-family: var(--mono); font-size: 10.5px; color: var(--mist); }
+  .totals { margin-top: 16px; display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+  .totals div { border: 1px solid var(--line); border-radius: 12px; padding: 12px; }
+  .totals b { display: block; font-size: 24px; font-weight: 300; }
+  .totals span { font-size: 12.5px; color: var(--steel); }
+  .split { margin-top: 16px; display: flex; height: 8px; border-radius: 4px; overflow: hidden; gap: 2px; }
+  .split i { display: block; height: 100%; }
+  .legend { margin-top: 12px; list-style: none; display: grid; gap: 8px; font-size: 13.5px; }
+  .legend li { display: grid; grid-template-columns: 10px 1fr auto; gap: 10px; align-items: center; }
+  .legend li i { width: 10px; height: 10px; border-radius: 3px; }
+  .legend li b { font-family: var(--mono); font-weight: 400; font-size: 12.5px; color: var(--mist); }
+
+  /* qa */
+  .qa { padding: 14px 0; border-top: 1px solid var(--line); display: grid; gap: 6px; }
+  .qa:first-of-type { border-top: 0; padding-top: 0; }
+  .qa-h { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+  .qa-h b { font-weight: 500; font-size: 14.5px; }
+  .qa p { color: var(--mist); font-size: 13.5px; }
+  .qa .res { font-size: 13px; color: var(--steel); }
+  .log { list-style: none; display: grid; gap: 0; }
+  .log li { padding: 12px 0; border-top: 1px solid var(--line); font-size: 13.5px; color: var(--mist); }
+  .log li:first-child { border-top: 0; padding-top: 0; }
+  .log b { color: var(--fog); font-weight: 500; }
+  .log small { display: block; color: var(--steel); font-size: 12px; margin-top: 2px; }
+</style>
+</head>
+<body>
+<header class="bar-top">
+  <a class="logo" href="index.html" aria-label="Showroom">Show<i></i>room</a>
+  <span class="where" data-t="where">Owner panel</span>
+  <span class="sample" data-t="sample">Sample data</span>
+  <div class="langs" role="group" aria-label="Language">
+    <button type="button" data-lang="en" aria-pressed="true">EN</button>
+    <button type="button" data-lang="de" aria-pressed="false">DE</button>
+    <button type="button" data-lang="fa" aria-pressed="false">FA</button>
+  </div>
+  <a class="back" href="index.html" data-t="back">Back to site</a>
+</header>
+<p class="notice" data-t="notice">Preview with sample data. Dealers, Reels, costs and invoices here are made up.</p>
+
+<main class="wrap">
+  <div class="head">
+    <div><h1 data-t="h1">Overview</h1><p data-t="date">Sunday, 22 November</p></div>
+    <div class="seg" role="group" data-ta="range">
+      <button type="button" data-r="day" aria-pressed="true" data-t="r_day">Today</button>
+      <button type="button" data-r="week" aria-pressed="false" data-t="r_week">This week</button>
+    </div>
+  </div>
+
+  <div class="kpis" id="kpis">
+    <div class="kpi"><span data-t="k1">New dealers</span><b data-k="dealers">2</b></div>
+    <div class="kpi"><span data-t="k2">Reels delivered</span><b data-k="reels">14</b></div>
+    <div class="kpi"><span data-t="k3">Credits used</span><b data-k="credits">22</b></div>
+    <div class="kpi"><span data-t="k4">AI and render cost</span><b data-k="cost">€3.84</b></div>
+    <div class="kpi bad"><span data-t="k5">Quality failures</span><b data-k="qa">1</b></div>
+  </div>
+
+  <div class="cols">
+    <div class="col">
+      <section class="box" aria-labelledby="ap-h">
+        <div class="box-h"><h2 id="ap-h"><span data-t="ap_h">Waiting for you</span><span class="count" id="apn">3</span></h2></div>
+        <div id="aps">
+          <div class="ap">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></span>
+            <div><b data-t="ap1">New dealer: Autohaus Lindner</b><span class="d" data-t="ap1d">Austria, signed up at 09:12, terms accepted</span></div>
+            <div class="acts"><button type="button" class="go" data-t="b_ok">Approve</button><button type="button" data-t="b_no">Decline</button></div>
+          </div>
+          <div class="ap">
+            <span class="ic"><img src="assets/reel-front.jpg" alt="" width="540" height="960"></span>
+            <div><b data-t="ap2">Reel: Kestrel Motors, C-Class</b><span class="d" data-t="ap2d">Guess the car, version 2, quality 9.4 of 10</span></div>
+            <div class="acts"><button type="button" class="go" data-t="b_ok">Approve</button><button type="button" data-t="b_hold">Hold</button></div>
+          </div>
+          <div class="ap">
+            <span class="ic"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M6 3h9l3 3v15H6z"/><path d="M9 10h6M9 14h6"/></svg></span>
+            <div><b data-t="ap3">Invoice: Westside Cars, Starter</b><span class="d" data-t="ap3d">€7, sent on 18 Nov, bank transfer</span></div>
+            <div class="acts"><button type="button" class="go" data-t="b_paid">Mark as paid</button></div>
+          </div>
+        </div>
+        <p class="empty" id="apEmpty" data-t="ap_empty">Nothing is waiting. Well done.</p>
+      </section>
+
+      <section class="box" aria-labelledby="dl-h">
+        <div class="box-h"><h2 id="dl-h" data-t="dl_h">Dealers</h2><small data-t="dl_s">5 accounts</small></div>
+        <table>
+          <thead><tr><th data-t="c_d">Dealer</th><th data-t="c_p">Plan</th><th data-t="c_r">Reels this month</th><th data-t="c_c">Credits</th><th data-t="c_s">Status</th></tr></thead>
+          <tbody>
+            <tr><td class="first"><span class="nm">Kestrel Motors</span><span class="sub">UK</span></td><td data-l="c_p">Showroom</td><td data-l="c_r"><span class="mono">7 / 12</span></td><td data-l="c_c"><span class="mono">6</span></td><td data-l="c_s"><span class="pill ok" data-t="s_trust">Trusted</span></td></tr>
+            <tr><td class="first"><span class="nm">Autosalon Darya</span><span class="sub">DE</span></td><td data-l="c_p">Gallery</td><td data-l="c_r"><span class="mono">18 / 40</span></td><td data-l="c_c"><span class="mono">11</span></td><td data-l="c_s"><span class="badges"><span class="pill vip">VIP</span><span class="pill" data-t="s_vip">50% off until 30 Nov</span></span></td></tr>
+            <tr><td class="first"><span class="nm">Westside Cars</span><span class="sub">NL</span></td><td data-l="c_p">Starter</td><td data-l="c_r"><span class="mono">3 / 3</span></td><td data-l="c_c"><span class="mono">0</span></td><td data-l="c_s"><span class="pill" data-t="s_act">Active</span></td></tr>
+            <tr><td class="first"><span class="nm">Garage Moreau</span><span class="sub">FR</span></td><td data-l="c_p">Showroom</td><td data-l="c_r"><span class="mono">4 / 12</span></td><td data-l="c_c"><span class="mono">2</span></td><td data-l="c_s"><span class="pill" data-t="s_act">Active</span></td></tr>
+            <tr><td class="first"><span class="nm">Autohaus Lindner</span><span class="sub">AT</span></td><td data-l="c_p" data-t="trial">Trial</td><td data-l="c_r"><span class="mono">2</span></td><td data-l="c_c"><span class="mono">2</span></td><td data-l="c_s"><span class="pill warn" data-t="s_wait">Waiting for approval</span></td></tr>
+          </tbody>
+        </table>
+      </section>
+
+      <section class="box" aria-labelledby="rf-h">
+        <div class="box-h"><h2 id="rf-h" data-t="rf_h">Referrals</h2><small data-t="rf_s">Inviter +5, new dealer +2</small></div>
+        <table>
+          <thead><tr><th data-t="c_inv">Invited by</th><th data-t="c_new">New dealer</th><th data-t="c_st">Status</th><th data-t="c_cr">Credits</th></tr></thead>
+          <tbody>
+            <tr><td class="first"><span class="nm">Kestrel Motors</span></td><td data-l="c_new"><span class="nm">Autohaus Lindner</span></td><td data-l="c_st"><span class="pill warn" data-t="pend">Pending</span></td><td data-l="c_cr"><span class="mono">0</span></td></tr>
+            <tr><td class="first"><span class="nm">Kestrel Motors</span></td><td data-l="c_new"><span class="nm">Westside Cars</span></td><td data-l="c_st"><span class="pill ok" data-t="qual">Qualified</span></td><td data-l="c_cr"><span class="badges"><span class="pill mono">+5</span><span class="pill mono">+2</span></span></td></tr>
+            <tr><td class="first"><span class="nm">Autosalon Darya</span></td><td data-l="c_new"><span class="nm">Garage Moreau</span></td><td data-l="c_st"><span class="pill ok" data-t="qual">Qualified</span></td><td data-l="c_cr"><span class="badges"><span class="pill mono">+5</span><span class="pill mono">+2</span></span></td></tr>
+          </tbody>
+        </table>
+      </section>
+    </div>
+
+    <div class="col">
+      <section class="box" aria-labelledby="cs-h">
+        <div class="box-h"><h2 id="cs-h" data-t="cs_h">Costs</h2><small data-t="cs_s">Last 7 days</small></div>
+        <div class="chart" id="chart" aria-hidden="true"></div>
+        <div class="totals">
+          <div><b class="ltr" data-t="cs_m">€61.40</b><span data-t="cs_ml">this month so far</span></div>
+          <div><b class="ltr" data-t="cs_r">€0.27</b><span data-t="cs_rl">per Reel on average</span></div>
+        </div>
+        <div class="split" aria-hidden="true"><i style="flex:38;background:#ff4a1c"></i><i style="flex:21;background:#ff8a66"></i><i style="flex:17;background:#b9c0c8"></i><i style="flex:14;background:#6b737c"></i><i style="flex:10;background:#3a4048"></i></div>
+        <ul class="legend">
+          <li><i style="background:#ff4a1c"></i><span data-t="x1">Chat with dealers</span><b>38%</b></li>
+          <li><i style="background:#ff8a66"></i><span data-t="x2">Quality check</span><b>21%</b></li>
+          <li><i style="background:#b9c0c8"></i><span data-t="x3">Captions and hashtags</span><b>17%</b></li>
+          <li><i style="background:#6b737c"></i><span data-t="x4">Music</span><b>14%</b></li>
+          <li><i style="background:#3a4048"></i><span data-t="x5">Rendering</span><b>10%</b></li>
+        </ul>
+      </section>
+
+      <section class="box" aria-labelledby="qa-h">
+        <div class="box-h"><h2 id="qa-h" data-t="qa_h">Quality failures</h2><small data-t="qa_s">Below 8 is never delivered</small></div>
+        <div class="qa">
+          <div class="qa-h"><b><span class="ltr">Westside Cars</span>, BMW 3 Series</b><span class="pill warn mono">6.8</span></div>
+          <p data-t="qa1">Text sat over the plate in the end card.</p>
+          <p class="res" data-t="qa1r">Made again automatically, passed with 8.9.</p>
+        </div>
+        <div class="qa">
+          <div class="qa-h"><b><span class="ltr">Garage Moreau</span>, VW Golf</b><span class="pill warn mono">7.1</span></div>
+          <p data-t="qa2">A silent stretch of 1.4 seconds near the end.</p>
+          <p class="res" data-t="qa2r">Held. 1 credit refunded, the dealer was told.</p>
+        </div>
+      </section>
+
+      <section class="box" aria-labelledby="hn-h">
+        <div class="box-h"><h2 id="hn-h" data-t="hn_h">Honorary dealers</h2><span class="pill vip">VIP</span></div>
+        <ul class="log">
+          <li><b class="ltr" style="display:block">Autosalon Darya</b><span data-t="hn1">50% off until 30 Nov.</span><small data-t="hn1s">Given by the owner on 12 Nov. Grants never stack, the lowest price wins.</small></li>
+          <li><b class="ltr" style="display:block">Kestrel Motors</b><span data-t="hn2">5 credits once.</span><small data-t="hn2s">Given by the owner on 3 Nov, for early feedback.</small></li>
+        </ul>
+      </section>
+    </div>
+  </div>
+</main>
+
+<script>
+window.T = {
+  en: {
+    _title: "Showroom: owner panel preview", where: "Owner panel", sample: "Sample data", back: "Back to site",
+    notice: "Preview with sample data. Dealers, Reels, costs and invoices here are made up.",
+    h1: "Overview", date: "Sunday, 22 November", range: "Time range", r_day: "Today", r_week: "This week",
+    k1: "New dealers", k2: "Reels delivered", k3: "Credits used", k4: "AI and render cost", k5: "Quality failures",
+    ap_h: "Waiting for you", ap1: "New dealer: Autohaus Lindner", ap1d: "Austria, signed up at 09:12, terms accepted",
+    ap2: "Reel: Kestrel Motors, C-Class", ap2d: "Guess the car, version 2, quality 9.4 of 10",
+    ap3: "Invoice: Westside Cars, Starter", ap3d: "€7, sent on 18 Nov, bank transfer",
+    b_ok: "Approve", b_no: "Decline", b_hold: "Hold", b_paid: "Mark as paid", ap_empty: "Nothing is waiting. Well done.", done: "Done (sample only)",
+    dl_h: "Dealers", dl_s: "5 accounts", c_d: "Dealer", c_p: "Plan", c_r: "Reels this month", c_c: "Credits", c_s: "Status",
+    s_trust: "Trusted", s_vip: "50% off until 30 Nov", s_act: "Active", s_wait: "Waiting for approval", trial: "Trial",
+    rf_h: "Referrals", rf_s: "Inviter +5, new dealer +2", c_inv: "Invited by", c_new: "New dealer", c_st: "Status", c_cr: "Credits", pend: "Pending", qual: "Qualified",
+    cs_h: "Costs", cs_s: "Last 7 days", cs_m: "€61.40", cs_ml: "this month so far", cs_r: "€0.27", cs_rl: "per Reel on average",
+    x1: "Chat with dealers", x2: "Quality check", x3: "Captions and hashtags", x4: "Music", x5: "Rendering",
+    qa_h: "Quality failures", qa_s: "Below 8 is never delivered",
+    qa1: "Text sat over the plate in the end card.", qa1r: "Made again automatically, passed with 8.9.",
+    qa2: "A silent stretch of 1.4 seconds near the end.", qa2r: "Held. 1 credit refunded, the dealer was told.",
+    hn_h: "Honorary dealers", hn1: "50% off until 30 Nov.", hn1s: "Given by the owner on 12 Nov. Grants never stack, the lowest price wins.",
+    hn2: "5 credits once.", hn2s: "Given by the owner on 3 Nov, for early feedback.",
+    days: ["16", "17", "18", "19", "20", "21", "22"]
+  },
+  de: {
+    _title: "Showroom: Inhaber-Panel (Vorschau)", where: "Inhaber-Panel", sample: "Beispieldaten", back: "Zur Website",
+    notice: "Vorschau mit Beispieldaten. Händler, Reels, Kosten und Rechnungen hier sind erfunden.",
+    h1: "Übersicht", date: "Sonntag, 22. November", range: "Zeitraum", r_day: "Heute", r_week: "Diese Woche",
+    k1: "Neue Händler", k2: "Gelieferte Reels", k3: "Genutzte Credits", k4: "KI- und Renderkosten", k5: "Qualitätsfehler",
+    ap_h: "Wartet auf dich", ap1: "Neuer Händler: Autohaus Lindner", ap1d: "Österreich, angemeldet um 09:12, AGB akzeptiert",
+    ap2: "Reel: Kestrel Motors, C-Klasse", ap2d: "Rate das Auto, Version 2, Qualität 9,4 von 10",
+    ap3: "Rechnung: Westside Cars, Starter", ap3d: "7 €, gesendet am 18. Nov., Überweisung",
+    b_ok: "Freigeben", b_no: "Ablehnen", b_hold: "Anhalten", b_paid: "Als bezahlt markieren", ap_empty: "Nichts wartet. Gut gemacht.", done: "Erledigt (nur Beispiel)",
+    dl_h: "Händler", dl_s: "5 Konten", c_d: "Händler", c_p: "Paket", c_r: "Reels im Monat", c_c: "Credits", c_s: "Status",
+    s_trust: "Vertraut", s_vip: "50 % Rabatt bis 30. Nov.", s_act: "Aktiv", s_wait: "Wartet auf Freigabe", trial: "Probemonat",
+    rf_h: "Empfehlungen", rf_s: "Einlader +5, neuer Händler +2", c_inv: "Eingeladen von", c_new: "Neuer Händler", c_st: "Status", c_cr: "Credits", pend: "Offen", qual: "Qualifiziert",
+    cs_h: "Kosten", cs_s: "Letzte 7 Tage", cs_m: "61,40 €", cs_ml: "in diesem Monat bisher", cs_r: "0,27 €", cs_rl: "pro Reel im Schnitt",
+    x1: "Chat mit Händlern", x2: "Qualitätsprüfung", x3: "Captions und Hashtags", x4: "Musik", x5: "Rendern",
+    qa_h: "Qualitätsfehler", qa_s: "Unter 8 wird nie geliefert",
+    qa1: "Text lag auf der Endkarte über dem Kennzeichen.", qa1r: "Automatisch neu gemacht, mit 8,9 bestanden.",
+    qa2: "Eine stille Stelle von 1,4 Sekunden kurz vor Schluss.", qa2r: "Angehalten. 1 Credit erstattet, der Händler wurde informiert.",
+    hn_h: "Ehrenhändler", hn1: "50 % Rabatt bis 30. Nov.", hn1s: "Vergeben vom Inhaber am 12. Nov. Vergünstigungen addieren sich nie, der niedrigste Preis gilt.",
+    hn2: "Einmalig 5 Credits.", hn2s: "Vergeben vom Inhaber am 3. Nov., für frühes Feedback."
+  },
+  fa: {
+    _title: "Showroom: پیش‌نمایش پنل مدیر", where: "پنل مدیر", sample: "داده‌ی نمونه", back: "بازگشت به سایت",
+    notice: "این صفحه فقط پیش‌نمایش با داده‌های نمونه است. نمایشگاه‌ها، ریلزها، هزینه‌ها و فاکتورها ساختگی‌اند.",
+    h1: "نمای کلی", date: "یکشنبه، ۲۲ نوامبر", range: "بازه‌ی زمانی", r_day: "امروز", r_week: "این هفته",
+    k1: "نمایشگاه تازه", k2: "ریلز تحویل‌شده", k3: "اعتبار مصرف‌شده", k4: "هزینه‌ی هوش مصنوعی و ساخت", k5: "رد شده در بررسی کیفیت",
+    ap_h: "منتظر تو", ap1: "نمایشگاه تازه: Autohaus Lindner", ap1d: "اتریش، ثبت‌نام ساعت ۰۹:۱۲، شرایط را پذیرفته",
+    ap2: "ریلز: Kestrel Motors، سی‌کلاس", ap2d: "حدس بزن کدام ماشین، نسخه‌ی ۲، کیفیت ۹٫۴ از ۱۰",
+    ap3: "فاکتور: Westside Cars، بسته‌ی Starter", ap3d: "۷ یورو، فرستاده‌شده در ۱۸ نوامبر، واریز بانکی",
+    b_ok: "تأیید", b_no: "رد", b_hold: "نگه دار", b_paid: "پرداخت شد", ap_empty: "چیزی منتظر نیست. عالی.", done: "انجام شد (فقط نمونه)",
+    dl_h: "نمایشگاه‌ها", dl_s: "۵ حساب", c_d: "نمایشگاه", c_p: "بسته", c_r: "ریلزهای این ماه", c_c: "اعتبار", c_s: "وضعیت",
+    s_trust: "مورد اعتماد", s_vip: "۵۰٪ تخفیف تا ۳۰ نوامبر", s_act: "فعال", s_wait: "منتظر تأیید", trial: "ماه آزمایشی",
+    rf_h: "دعوت‌ها", rf_s: "دعوت‌کننده ۵ اعتبار، تازه‌وارد ۲ اعتبار", c_inv: "دعوت‌کننده", c_new: "نمایشگاه تازه", c_st: "وضعیت", c_cr: "اعتبار", pend: "در انتظار", qual: "کامل شد",
+    cs_h: "هزینه‌ها", cs_s: "۷ روز گذشته", cs_m: "۶۱٫۴۰ یورو", cs_ml: "از اول این ماه", cs_r: "۰٫۲۷ یورو", cs_rl: "به‌طور میانگین برای هر ریلز",
+    x1: "چت با نمایشگاه‌ها", x2: "بررسی کیفیت", x3: "متن پست و هشتگ", x4: "آهنگ", x5: "ساخت ویدیو",
+    qa_h: "رد شده در بررسی کیفیت", qa_s: "زیر ۸ هیچ‌وقت تحویل نمی‌شود",
+    qa1: "در کارت آخر، متن روی پلاک افتاده بود.", qa1r: "خودکار دوباره ساخته شد و با ۸٫۹ قبول شد.",
+    qa2: "نزدیک آخر ویدیو ۱٫۴ ثانیه بی‌صدا بود.", qa2r: "نگه داشته شد. ۱ اعتبار برگشت و به نمایشگاه خبر داده شد.",
+    hn_h: "کاربران افتخاری", hn1: "۵۰٪ تخفیف تا ۳۰ نوامبر.", hn1s: "مدیر در ۱۲ نوامبر داده است. امتیازها روی هم جمع نمی‌شوند و کمترین قیمت حساب می‌شود.",
+    hn2: "یک بار ۵ اعتبار.", hn2s: "مدیر در ۳ نوامبر داده است، برای نظرهای اولیه.",
+    days: ["۱۶", "۱۷", "۱۸", "۱۹", "۲۰", "۲۱", "۲۲"]
+  }
+};
+</script>
+<script src="assets/site.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+<script>
+(function () {
+  const SR = window.SR, G = window.gsap && !SR.reduce ? window.gsap : null;
+  const COST = [2.10, 2.90, 3.40, 2.20, 3.10, 2.20, 3.84];
+  const DATA = { day: { dealers: 2, reels: 14, credits: 22, cost: 3.84, qa: 1 }, week: { dealers: 5, reels: 71, credits: 104, cost: 19.74, qa: 4 } };
+  let range = "day";
+  const money = (v) => { const s = v.toFixed(2); return SR.lang === "de" ? s.replace(".", ",") + " €" : SR.lang === "fa" ? SR.digits(s) + " یورو" : "€" + s; };
+  function paintKpis(anim) {
+    const d = DATA[range];
+    document.querySelectorAll("[data-k]").forEach((b) => {
+      const k = b.dataset.k, v = d[k];
+      const show = (x) => { b.textContent = k === "cost" ? money(x) : SR.digits(Math.round(x)); };
+      if (G && anim) { const o = { x: 0 }; G.to(o, { x: v, duration: .9, ease: "power3.out", onUpdate: () => show(o.x) }); } else show(v);
+    });
+  }
+  function paintChart(anim) {
+    const ch = document.getElementById("chart"), days = SR.tr("days") || T.en.days, max = Math.max(...COST);
+    ch.innerHTML = COST.map((v, i) => `<div class="c${i === 6 ? " now" : ""}"><i style="height:${Math.round((v / max) * 100)}%"></i><em>${SR.digits(v.toFixed(1))}</em><span>${days[i]}</span></div>`).join("");
+    if (G && anim) G.from("#chart i", { scaleY: 0, stagger: .06, duration: .8, ease: "expo.out" });
+  }
+  function labels() { document.querySelectorAll("td[data-l]").forEach((td) => td.setAttribute("data-label", SR.tr(td.dataset.l))); }
+  document.querySelectorAll(".seg button").forEach((b) => b.addEventListener("click", () => {
+    range = b.dataset.r;
+    document.querySelectorAll(".seg button").forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+    paintKpis(true);
+  }));
+  // approvals: act on one, it leaves the list
+  document.getElementById("aps").addEventListener("click", (e) => {
+    const b = e.target.closest(".acts button"); if (!b) return;
+    const row = b.closest(".ap");
+    const gone = () => {
+      row.remove();
+      const n = document.querySelectorAll("#aps .ap").length;
+      document.getElementById("apn").textContent = SR.digits(n);
+      if (!n) document.getElementById("apEmpty").style.display = "block";
+    };
+    SR.toast(SR.tr("done"));
+    if (G) G.to(row, { opacity: 0, x: SR.lang === "fa" ? -30 : 30, duration: .45, ease: "power3.in", onComplete: gone }); else gone();
+  });
+  SR.onLang(() => { paintKpis(false); paintChart(false); labels(); document.getElementById("apn").textContent = SR.digits(document.querySelectorAll("#aps .ap").length); });
+  paintKpis(false); paintChart(false); labels(); document.getElementById("apn").textContent = SR.digits(3);
+  if (G) {
+    G.from(".kpi", { y: 16, opacity: 0, stagger: .07, duration: .8, ease: "expo.out" });
+    G.from(".box", { y: 24, opacity: 0, stagger: .08, duration: .9, ease: "expo.out", delay: .2 });
+    G.from("#chart i", { scaleY: 0, stagger: .06, duration: 1, ease: "expo.out", delay: .5 });
+    paintKpis(true);
+  }
+  window.SRD = { kpi: () => document.querySelector('[data-k="reels"]').textContent };
+})();
+</script>
+</body>
+</html>
